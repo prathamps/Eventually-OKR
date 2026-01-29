@@ -1,58 +1,68 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import type { KeyResult } from "../types/okr_form.types.ts";
+import { KeyResultContext } from "../providers/KeyResultProvider.tsx";
 
 type KeyResultForm = {
   KeyResultsList: KeyResult[];
   setKeyResultsList: (keyResultList: KeyResult[]) => void;
 };
 
-export const KeyResultForm = ({
-  KeyResultsList,
-  setKeyResultsList,
-}: KeyResultForm) => {
-  const [KeyResult, setKeyResult] = useState<KeyResult>({
+export const KeyResultForm = () => {
+  const [keyResult, setKeyResult] = useState<KeyResult>({
     id: 0,
     description: "",
-    progress: 0,
+    progress: "",
   });
 
+  const { keyResultList, sendKeyResult } = useContext(KeyResultContext);
+
   function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    setKeyResult({ ...KeyResult, [e.target.name]: e.target.value });
-    console.log(KeyResult);
+    setKeyResult({ ...keyResult, [e.target.name]: e.target.value });
+    console.log(keyResult);
   }
 
   function addKeyResult() {
-    if (KeyResult.progress && KeyResult.description) {
-      if (KeyResultsList.length)
-        setKeyResultsList([
-          ...KeyResultsList,
-          {
-            ...KeyResult,
-            id: KeyResultsList[KeyResultsList.length - 1].id + 1,
-          },
-        ]);
-      else setKeyResultsList([{ ...KeyResult, id: 0 }]);
+    console.log("Hello");
+    const data = {
+      ...keyResult,
+      id: keyResultList.length
+        ? keyResultList[keyResultList.length - 1].id + 1
+        : 0,
+    };
+
+    try{
+        sendKeyResult(data);
+    }catch(err){
+        alert(err);
     }
   }
   return (
-    <div>
-      <label htmlFor={"description"}>Key Results</label>
+    <div
+      className={
+        "flex flex-col gap-2 border-2 rounded-lg border-gray-400 p-4 m-4"
+      }
+    >
+      <label htmlFor={"description"} className={"font-bold"}>
+        Key Results
+      </label>
       <input
         id={"description"}
         type="text"
         name={"description"}
         placeholder={"Key Results"}
-        value={KeyResult.description}
+        value={keyResult.description}
         className={"border-2 border-gray-200 rounded-lg p-2"}
         onChange={inputHandler}
         required={true}
       />
-      <label htmlFor={"progress"}>Progress</label>
+      <label htmlFor={"progress"} className={"font-bold"}>
+        Progress
+      </label>
       <input
         id={"progress"}
         type="text"
         name={"progress"}
-        value={KeyResult.progress}
+        value={keyResult.progress}
         onChange={inputHandler}
         placeholder={"Progress"}
         className={"border-2 border-gray-200 rounded-lg p-2"}
@@ -61,7 +71,9 @@ export const KeyResultForm = ({
       <button
         type={"button"}
         onClick={addKeyResult}
-        className={"bg-blue-300 border-3 border-blue-900  p-2 px-4 rounded-xl"}
+        className={
+          "bg-[#007AFF] hover:bg-blue-700 border shadow-blue-500/20 shadow-lg text-white p-2 px-4 rounded-xl transition-all "
+        }
       >
         Add
       </button>
