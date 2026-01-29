@@ -1,10 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import Apple from "./App.tsx";
+
+import Eventually_OKR from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Apple />
+    <Eventually_OKR />
   </StrictMode>,
 );
