@@ -2,11 +2,6 @@ import React, { useContext, useState } from "react"
 import type { KeyResult } from "../types/okr_form.types.ts"
 import { KeyResultContext } from "../providers/KeyResultProvider.tsx"
 
-type KeyResultForm = {
-	KeyResultsList: KeyResult[]
-	setKeyResultsList: (keyResultList: KeyResult[]) => void
-}
-
 export const KeyResultForm = () => {
 	const [keyResult, setKeyResult] = useState<KeyResult>({
 		id: 0,
@@ -18,11 +13,9 @@ export const KeyResultForm = () => {
 
 	function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
 		setKeyResult({ ...keyResult, [e.target.name]: e.target.value })
-		console.log(keyResult)
 	}
 
 	function addKeyResult() {
-		console.log("Hello")
 		const data = {
 			...keyResult,
 			id: keyResultList.length
@@ -32,8 +25,9 @@ export const KeyResultForm = () => {
 
 		try {
 			sendKeyResult(data)
+			setKeyResult({ id: 0, description: "", progress: "" })
 		} catch (err) {
-			alert(err)
+			alert(err instanceof Error ? err.message : String(err))
 		}
 	}
 	return (
@@ -53,20 +47,21 @@ export const KeyResultForm = () => {
 				value={keyResult.description}
 				className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
 				onChange={inputHandler}
-				required={true}
 			/>
 			<label htmlFor={"progress"} className="text-lg font-semibold">
 				Progress
 			</label>
 			<input
 				id={"progress"}
-				type="text"
+				type="number"
+				min={0}
+				max={100}
+				inputMode="numeric"
 				name={"progress"}
 				value={keyResult.progress}
 				onChange={inputHandler}
 				placeholder={"Progress"}
 				className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
-				required={true}
 			/>
 			<button
 				type={"button"}

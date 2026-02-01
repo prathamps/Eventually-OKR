@@ -15,23 +15,22 @@ export const KeyResultContext = createContext<KeyResultContextType>({
 export const KeyResultProvider = ({
   children,
 }: {
-  children: React.ReactElement;
+  children: React.ReactNode;
 }) => {
   const [keyResultList, setKeyResultList] = useState<KeyResult[]>([]);
 
   function sendKeyResult(keyResult: KeyResult) {
-    if (
-      keyResult.progress &&
-      keyResult.description &&
-      Number(keyResult.progress)
-    ) {
-      if (Number(keyResult.progress) < 0 || Number(keyResult.progress) > 100) {
-        throw new Error(`The value should be in the range (0-100)`);
-      }
-      setKeyResultList([...keyResultList, keyResult]);
-    } else {
-      throw new Error("Invalid Input");
-    }
+    const description = keyResult.description?.trim();
+    const progressRaw = String(keyResult.progress ?? "").trim();
+    const progress = Number(progressRaw);
+
+    if (!description) throw new Error("Please enter a key result description.");
+    if (progressRaw === "" || Number.isNaN(progress))
+      throw new Error("Please enter a valid progress value.");
+    if (progress < 0 || progress > 100)
+      throw new Error("Progress should be in the range 0-100.");
+
+    setKeyResultList((prev) => [...prev, keyResult]);
   }
 
   return (

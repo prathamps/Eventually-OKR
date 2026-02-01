@@ -9,4 +9,3 @@ export type OKR = {
   objective: string;
   keyResults: KeyResult[];
 };
-
