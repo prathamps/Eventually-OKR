@@ -1,0 +1,114 @@
+{
+  "okrs": [
+    {
+      "id": 1,
+      "objective": "Learn React",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Learning React fundamentals",
+          "progress": "100%"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "objective": "Learn TypeScript",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Understanding TypeScript basics",
+          "progress": "80%"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "objective": "Build a Todo App",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Create CRUD functionality",
+          "progress": "70%"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "objective": "Learn Node.js",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Understand Express and APIs",
+          "progress": "60%"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "objective": "Master Git",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Practice branching and rebasing",
+          "progress": "75%"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "objective": "Learn MongoDB",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Work with CRUD and aggregation",
+          "progress": "65%"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "objective": "Prepare for Interviews",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Solve DSA problems daily",
+          "progress": "50%"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "objective": "Build a Portfolio",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Add 3 solid projects",
+          "progress": "40%"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "objective": "Learn System Design",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Understand scalability concepts",
+          "progress": "30%"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "objective": "Improve Communication Skills",
+      "keyResults": [
+        {
+          "id": 1,
+          "description": "Practice explaining technical concepts",
+          "progress": "55%"
+        }
+      ]
+    }
+  ]
+}
