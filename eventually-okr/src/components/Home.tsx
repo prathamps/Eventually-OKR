@@ -19,6 +19,21 @@ const Home = () => {
       });
   }, []);
 
+  async function deleteObjective(objectiveId: number) {
+    const confirmed = confirm("Delete this objective?");
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`http://localhost:3000/okrs/${objectiveId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error(`Failed to delete OKR (${res.status}).`);
+      setOkrList((prev) => prev.filter((o) => o.id !== objectiveId));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    }
+  }
+
   return (
     <div className="min-h-dvh px-4 py-10">
       <div className="mx-auto w-full max-w-4xl">
@@ -36,7 +51,7 @@ const Home = () => {
           </Modal>
         </div>
 
-        <OkrList okr={okrList} />
+        <OkrList okr={okrList} onDeleteObjective={deleteObjective} />
       </div>
     </div>
   );

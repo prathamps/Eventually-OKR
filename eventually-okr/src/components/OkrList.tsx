@@ -2,9 +2,10 @@ import type { KeyResult, OKR } from "../types/okr_form.types.ts";
 
 type OKRListProps = {
   okr: OKR[];
+  onDeleteObjective: (objectiveId: number) => void;
 };
 
-const OkrList = ({ okr }: OKRListProps) => {
+const OkrList = ({ okr, onDeleteObjective }: OKRListProps) => {
   return (
     <div className="space-y-4">
       {okr?.map((objective: OKR) => {
@@ -13,10 +14,17 @@ const OkrList = ({ okr }: OKRListProps) => {
             key={objective.id}
             className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60"
           >
-            <div className="border-b border-[#e5e5ea] px-5 py-4">
+            <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
               <h2 className="text-lg font-semibold text-zinc-900">
                 {objective.objective}
               </h2>
+              <button
+                type="button"
+                onClick={() => onDeleteObjective(objective.id)}
+                className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+              >
+                Delete
+              </button>
             </div>
             <ul className="divide-y divide-[#e5e5ea]">
               {objective.keyResults?.map((keyResult: KeyResult) => {

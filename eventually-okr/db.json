@@ -34,17 +34,6 @@
       ]
     },
     {
-      "id": "4",
-      "objective": "Learn Node.js",
-      "keyResults": [
-        {
-          "id": 1,
-          "description": "Understand Express and APIs",
-          "progress": "60%"
-        }
-      ]
-    },
-    {
       "id": "5",
       "objective": "Master Git",
       "keyResults": [
@@ -111,13 +100,18 @@
       ]
     },
     {
-      "id": "2c0d",
-      "objective": "Odfjdksljflasjfkljas",
+      "id": "e5d5",
+      "objective": "bb",
       "keyResults": [
         {
           "id": 0,
-          "description": "fdskljfkl;adsj",
-          "progress": "40%"
+          "description": "ddddd",
+          "progress": "11%"
+        },
+        {
+          "id": 1,
+          "description": "sss",
+          "progress": "20%"
         }
       ]
     }
