@@ -27,6 +27,8 @@
 
 ```bash
 npm install
+npm run db:up
+npm run prisma:migrate
 npm run prisma:generate
 npm run start:dev
 ```
@@ -35,9 +37,7 @@ The app listens on `PORT` (default `3001`) and has CORS enabled.
 
 ### Database setup
 
-This project uses Prisma + SQLite (see `.env` for `DATABASE_URL` and `PORT`).
-
-If `prisma db push` / `prisma migrate dev` fails with a "Schema engine error" on your machine, try running with Node.js 20 LTS (Prisma can be sensitive to very new Node versions on Windows).
+This project uses Prisma + Postgres via Podman Compose (see `docker-compose.yml` and `.env`).
 
 ### Endpoints
 
