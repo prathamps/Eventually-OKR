@@ -2,7 +2,7 @@
   "okrs": [
     {
       "id": "1",
-      "objective": "Learn React",
+      "objective": "AH",
       "keyResults": [
         {
           "id": 1,
@@ -96,22 +96,6 @@
           "id": 1,
           "description": "Practice explaining technical concepts",
           "progress": "55%"
-        }
-      ]
-    },
-    {
-      "id": "e5d5",
-      "objective": "bb",
-      "keyResults": [
-        {
-          "id": 0,
-          "description": "ddddd",
-          "progress": "11%"
-        },
-        {
-          "id": 1,
-          "description": "sss",
-          "progress": "20%"
         }
       ]
     }
