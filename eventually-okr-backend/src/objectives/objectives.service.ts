@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { CreateObjectiveDto } from './dto/create-objective.dto';
 import type { UpdateObjectiveDto } from './dto/update-objective.dto';
@@ -12,12 +8,13 @@ export class ObjectivesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateObjectiveDto) {
-    const objective = dto.objective?.trim();
-    if (!objective) {
-      throw new BadRequestException('Objective is required.');
-    }
     return this.prisma.objective.create({
-      data: { objective },
+      data: {
+        objective: dto.objective,
+        keyResults: dto.keyResults?.length
+          ? { create: dto.keyResults }
+          : undefined,
+      },
       include: { keyResults: true },
     });
   }
@@ -40,12 +37,9 @@ export class ObjectivesService {
 
   async update(id: number, dto: UpdateObjectiveDto) {
     await this.findOne(id);
-    if (dto.objective !== undefined && !dto.objective.trim()) {
-      throw new BadRequestException('Objective is required.');
-    }
     return this.prisma.objective.update({
       where: { id },
-      data: { objective: dto.objective?.trim() },
+      data: dto,
       include: { keyResults: true },
     });
   }

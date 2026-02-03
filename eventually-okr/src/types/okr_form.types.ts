@@ -1,7 +1,7 @@
 export type KeyResult = {
   id: number;
   description: string;
-  progress: string;
+  progress: string | number;
 };
 
 export type OKR = {

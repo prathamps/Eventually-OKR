@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { KeyResultContext } from "../providers/KeyResultProvider.tsx";
+import { KeyResultContext } from "../providers/KeyResultContext.tsx";
 export const KeyResultList = () => {
   const { keyResultList, setKeyResultList } = useContext(KeyResultContext);
   return (

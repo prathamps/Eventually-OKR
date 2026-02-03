@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import type { KeyResult } from "../types/okr_form.types.ts";
-import { KeyResultContext } from "../providers/KeyResultProvider.tsx";
+import { KeyResultContext } from "../providers/KeyResultContext.tsx";
 
 export const KeyResultForm = () => {
   const [keyResult, setKeyResult] = useState<KeyResult>({

@@ -28,6 +28,11 @@ export class KeyresultController {
     );
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.keyresultService.findOne(Number(id));
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: UpdateKeyresultDto) {
     return this.keyresultService.update(Number(id), dto);

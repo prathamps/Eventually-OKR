@@ -47,6 +47,10 @@ const OkrList = ({
             <ul className="divide-y divide-[#e5e5ea]">
               {objective.keyResults?.map((keyResult: KeyResult) => {
                 const checkboxId = `kr-${objective.id}-${keyResult.id}`;
+                const progressText =
+                  typeof keyResult.progress === "number"
+                    ? `${keyResult.progress}%`
+                    : keyResult.progress;
                 return (
                   <li
                     key={keyResult.id}
@@ -68,7 +72,7 @@ const OkrList = ({
                     </label>
                     <div className="flex items-center gap-3">
                       <div className="whitespace-nowrap tabular-nums text-base font-semibold text-zinc-600">
-                        {keyResult.progress}
+                        {progressText}
                       </div>
                       <button
                         type="button"

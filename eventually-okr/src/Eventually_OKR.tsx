@@ -1,20 +1,21 @@
 import { KeyResultList } from "./components/KeyResultList.tsx";
 import React, { useContext, useRef, useState } from "react";
 import { KeyResultForm } from "./components/KeyResultForm.tsx";
-import {
-  KeyResultContext,
-  KeyResultProvider,
-} from "./providers/KeyResultProvider.tsx";
+import { KeyResultContext } from "./providers/KeyResultContext.tsx";
+import { KeyResultProvider } from "./providers/KeyResultProvider.tsx";
 import type { OKR } from "./types/okr_form.types.ts";
 
 type EventuallyOKRProps = {
   setOkrList: React.Dispatch<React.SetStateAction<OKR[]>>;
+  apiBase: string;
 };
 
 function Eventually_OKR_Form({
   setOkrList,
+  apiBase,
 }: {
   setOkrList: React.Dispatch<React.SetStateAction<OKR[]>>;
+  apiBase: string;
 }) {
   const { keyResultList, setKeyResultList } = useContext(KeyResultContext);
   const [objective, setObjective] = useState("");
@@ -33,27 +34,43 @@ function Eventually_OKR_Form({
       return;
     }
 
-    const payload: Omit<OKR, "id"> = {
-      objective: objectiveValue,
-      keyResults: keyResultList.map((kr) => ({
-        ...kr,
-        progress: `${Number(kr.progress)}%`,
-      })),
-    };
-
     try {
-      const res = await fetch("http://localhost:3000/okrs", {
+      const objectiveRes = await fetch(`${apiBase}/objectives`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ objective: objectiveValue }),
       });
 
-      if (!res.ok) {
-        throw new Error(`Failed to save OKR (${res.status}).`);
+      if (!objectiveRes.ok) {
+        throw new Error(`Failed to save objective (${objectiveRes.status}).`);
       }
 
-      const created: OKR = await res.json();
-      setOkrList((prev) => [...prev, created]);
+      const createdObjective: OKR = await objectiveRes.json();
+
+      const createdKeyResults = await Promise.all(
+        keyResultList.map(async (kr) => {
+          const res = await fetch(`${apiBase}/keyresult`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              objectiveId: createdObjective.id,
+              description: kr.description,
+              progress: Number(kr.progress),
+            }),
+          });
+
+          if (!res.ok) {
+            throw new Error(`Failed to save key result (${res.status}).`);
+          }
+
+          return res.json();
+        }),
+      );
+
+      setOkrList((prev) => [
+        ...prev,
+        { ...createdObjective, keyResults: createdKeyResults },
+      ]);
 
       setObjective("");
       setKeyResultList([]);
@@ -122,14 +139,14 @@ function Eventually_OKR_Form({
   );
 }
 
-function Eventually_OKR({ setOkrList }: EventuallyOKRProps) {
+function Eventually_OKR({ setOkrList, apiBase }: EventuallyOKRProps) {
   return (
     <KeyResultProvider>
       <div className="flex flex-col items-center px-4 py-6">
         <h2 className="mb-4 text-2xl font-bold tracking-tight text-zinc-900">
           Add OKR
         </h2>
-        <Eventually_OKR_Form setOkrList={setOkrList} />
+        <Eventually_OKR_Form setOkrList={setOkrList} apiBase={apiBase} />
       </div>
     </KeyResultProvider>
   );

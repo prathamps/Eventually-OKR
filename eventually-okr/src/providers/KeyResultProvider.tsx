@@ -1,17 +1,6 @@
-import React, { createContext, useState } from "react";
+import React, { useState } from "react";
 import type { KeyResult } from "../types/okr_form.types.ts";
-
-type KeyResultContextType = {
-  keyResultList: KeyResult[];
-  sendKeyResult: (keyResult: KeyResult) => void;
-  setKeyResultList: (keyResultList: KeyResult[]) => void;
-};
-
-export const KeyResultContext = createContext<KeyResultContextType>({
-  keyResultList: [],
-  sendKeyResult: () => {},
-  setKeyResultList: () => {},
-});
+import { KeyResultContext } from "./KeyResultContext.tsx";
 export const KeyResultProvider = ({
   children,
 }: {

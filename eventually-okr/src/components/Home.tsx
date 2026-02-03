@@ -4,11 +4,13 @@ import OkrList from "./OkrList.tsx";
 import { useEffect, useState } from "react";
 import type { OKR } from "../types/okr_form.types.ts";
 
+const API_BASE = "http://localhost:3001";
+
 const Home = () => {
   const [okrList, setOkrList] = useState<OKR[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/okrs")
+    fetch(`${API_BASE}/objectives`)
       .then(async (res) => {
         if (!res.ok) throw new Error(`Failed to load OKRs (${res.status}).`);
         const result = await res.json();
@@ -24,7 +26,7 @@ const Home = () => {
     if (!confirmed) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/okrs/${objectiveId}`, {
+      const res = await fetch(`${API_BASE}/objectives/${objectiveId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error(`Failed to delete OKR (${res.status}).`);
@@ -39,7 +41,7 @@ const Home = () => {
     if (!nextObjective || nextObjective === currentObjective) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/okrs/${objectiveId}`, {
+      const res = await fetch(`${API_BASE}/objectives/${objectiveId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ objective: nextObjective }),
@@ -60,26 +62,25 @@ const Home = () => {
     const confirmed = confirm("Delete this key result?");
     if (!confirmed) return;
 
-    const objective = okrList.find((o) => o.id === objectiveId);
-    if (!objective) return;
-
-    const nextKeyResults = (objective.keyResults ?? []).filter(
-      (kr) => kr.id !== keyResultId,
-    );
-
     try {
-      const res = await fetch(`http://localhost:3000/okrs/${objectiveId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keyResults: nextKeyResults }),
-      });
-      if (!res.ok) throw new Error(`Failed to update OKR (${res.status}).`);
-
       setOkrList((prev) =>
         prev.map((o) =>
-          o.id === objectiveId ? { ...o, keyResults: nextKeyResults } : o,
+          o.id === objectiveId
+            ? {
+                ...o,
+                keyResults: (o.keyResults ?? []).filter(
+                  (kr) => kr.id !== keyResultId,
+                ),
+              }
+            : o,
         ),
       );
+
+      const res = await fetch(`${API_BASE}/keyresult/${keyResultId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok)
+        throw new Error(`Failed to delete key result (${res.status}).`);
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
     }
@@ -98,7 +99,7 @@ const Home = () => {
             </div>
           </div>
           <Modal triggerLabel="Add OKR">
-            <Eventually_OKR setOkrList={setOkrList} />
+            <Eventually_OKR setOkrList={setOkrList} apiBase={API_BASE} />
           </Modal>
         </div>
 
