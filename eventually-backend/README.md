@@ -21,35 +21,6 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Eventually OKR API (Prisma)
-
-### Quick start
-
-```bash
-npm install
-npm run db:up
-npm run prisma:migrate
-npm run prisma:generate
-npm run start:dev
-```
-
-The app listens on `PORT` (default `3001`) and has CORS enabled.
-
-### Database setup
-
-This project uses Prisma + Postgres via Podman Compose (see `docker-compose.yml` and `.env`).
-
-### Endpoints
-
-- `GET /objectives`
-- `POST /objectives` body: `{ "objective": "..." }`
-- `PATCH /objectives/:id` body: `{ "objective": "..." }`
-- `DELETE /objectives/:id`
-- `GET /keyresult` (optional query: `?objectiveId=1`)
-- `POST /keyresult` body: `{ "objectiveId": 1, "description": "...", "progress": 50 }`
-- `PATCH /keyresult/:id` body: `{ "description": "...", "progress": 60 }`
-- `DELETE /keyresult/:id`
-
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
@@ -57,33 +28,33 @@ This project uses Prisma + Postgres via Podman Compose (see `docker-compose.yml`
 ## Project setup
 
 ```bash
-$ npm install
+$ pnpm install
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-$ npm run start
+$ pnpm run start
 
 # watch mode
-$ npm run start:dev
+$ pnpm run start:dev
 
 # production mode
-$ npm run start:prod
+$ pnpm run start:prod
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ npm run test
+$ pnpm run test
 
 # e2e tests
-$ npm run test:e2e
+$ pnpm run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ pnpm run test:cov
 ```
 
 ## Deployment
@@ -93,7 +64,7 @@ When you're ready to deploy your NestJS application to production, there are som
 If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
 
 ```bash
-$ npm install -g @nestjs/mau
+$ pnpm install -g @nestjs/mau
 $ mau deploy
 ```
 
