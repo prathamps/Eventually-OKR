@@ -12,3 +12,20 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Objective {
+  id         Int         @id @default(autoincrement())
+  title      String
+  keyResults KeyResult[]
+  createdAt  DateTime    @default(now())
+}
+
+model KeyResult {
+  id          Int       @id @default(autoincrement())
+  progress    Int       @default(0)
+  isCompleted Boolean   @default(false)
+  description String
+  objectiveId Int
+  objective   Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+}
