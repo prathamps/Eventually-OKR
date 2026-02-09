@@ -8,17 +8,24 @@ const API_BASE = "http://localhost:3001";
 
 const Home = () => {
   const [okrList, setOkrList] = useState<OKR[]>([]);
+  const [editingObjectiveId, setEditingObjectiveId] = useState<number | null>(
+    null,
+  );
+  const [editingTitle, setEditingTitle] = useState("");
+
+  async function loadOkrs() {
+    try {
+      const res = await fetch(`${API_BASE}/objectives`);
+      if (!res.ok) throw new Error(`Failed to load OKRs (${res.status}).`);
+      const result = await res.json();
+      setOkrList(result);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    }
+  }
 
   useEffect(() => {
-    fetch(`${API_BASE}/objectives`)
-      .then(async (res) => {
-        if (!res.ok) throw new Error(`Failed to load OKRs (${res.status}).`);
-        const result = await res.json();
-        setOkrList(result);
-      })
-      .catch((err) => {
-        alert(err instanceof Error ? err.message : String(err));
-      });
+    loadOkrs();
   }, []);
 
   async function deleteObjective(objectiveId: number) {
@@ -36,23 +43,34 @@ const Home = () => {
     }
   }
 
-  async function editObjective(objectiveId: number, currentObjective: string) {
-    const nextObjective = prompt("Edit objective", currentObjective)?.trim();
-    if (!nextObjective || nextObjective === currentObjective) return;
+  function startEditObjective(objectiveId: number, currentTitle: string) {
+    setEditingObjectiveId(objectiveId);
+    setEditingTitle(currentTitle);
+  }
+
+  function cancelEditObjective() {
+    setEditingObjectiveId(null);
+    setEditingTitle("");
+  }
+
+  async function saveEditObjective(objectiveId: number) {
+    const nextObjective = editingTitle.trim();
+    if (!nextObjective) return;
 
     try {
       const res = await fetch(`${API_BASE}/objectives/${objectiveId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ objective: nextObjective }),
+        body: JSON.stringify({ title: nextObjective }),
       });
       if (!res.ok) throw new Error(`Failed to update OKR (${res.status}).`);
 
       setOkrList((prev) =>
         prev.map((o) =>
-          o.id === objectiveId ? { ...o, objective: nextObjective } : o,
+          o.id === objectiveId ? { ...o, title: nextObjective } : o,
         ),
       );
+      cancelEditObjective();
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
     }
@@ -76,13 +94,51 @@ const Home = () => {
         ),
       );
 
-      const res = await fetch(`${API_BASE}/keyresult/${keyResultId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${API_BASE}/objective/${objectiveId}/key-results/${keyResultId}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (!res.ok)
         throw new Error(`Failed to delete key result (${res.status}).`);
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  async function updateKeyResult(
+    objectiveId: number,
+    keyResultId: number,
+    updates: { progress?: number; isCompleted?: boolean },
+  ) {
+    setOkrList((prev) =>
+      prev.map((o) =>
+        o.id === objectiveId
+          ? {
+              ...o,
+              keyResults: o.keyResults.map((kr) =>
+                kr.id === keyResultId ? { ...kr, ...updates } : kr,
+              ),
+            }
+          : o,
+      ),
+    );
+
+    try {
+      const res = await fetch(
+        `${API_BASE}/objective/${objectiveId}/key-results/${keyResultId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        },
+      );
+      if (!res.ok)
+        throw new Error(`Failed to update key result (${res.status}).`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+      loadOkrs();
     }
   }
 
@@ -106,8 +162,14 @@ const Home = () => {
         <OkrList
           okr={okrList}
           onDeleteObjective={deleteObjective}
-          onEditObjective={editObjective}
+          onStartEditObjective={startEditObjective}
+          onCancelEditObjective={cancelEditObjective}
+          onSaveEditObjective={saveEditObjective}
+          editingObjectiveId={editingObjectiveId}
+          editingTitle={editingTitle}
+          onEditingTitleChange={setEditingTitle}
           onDeleteKeyResult={deleteKeyResult}
+          onUpdateKeyResult={updateKeyResult}
         />
       </div>
     </div>

@@ -1,11 +1,12 @@
 export type KeyResult = {
   id: number;
   description: string;
-  progress: string | number;
+  progress: number;
+  isCompleted?: boolean;
 };
 
 export type OKR = {
   id: number;
-  objective: string;
+  title: string;
   keyResults: KeyResult[];
 };

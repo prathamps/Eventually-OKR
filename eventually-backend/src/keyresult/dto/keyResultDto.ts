@@ -1,4 +1,4 @@
-export class CreateKeyResultDto {
+export class KeyResultDto {
   description: string;
   progress: number;
 }

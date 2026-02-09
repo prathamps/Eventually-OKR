@@ -6,18 +6,26 @@ export const KeyResultForm = () => {
   const [keyResult, setKeyResult] = useState<KeyResult>({
     id: 0,
     description: "",
-    progress: "",
+    progress: 0,
   });
+  const [progressInput, setProgressInput] = useState("0");
 
   const { keyResultList, sendKeyResult } = useContext(KeyResultContext);
 
   function inputHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    setKeyResult({ ...keyResult, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "progress") {
+      setProgressInput(value);
+      return;
+    }
+    setKeyResult({ ...keyResult, [name]: value });
   }
 
   function addKeyResult() {
+    const progress = Number(progressInput);
     const data = {
       ...keyResult,
+      progress,
       id: keyResultList.length
         ? keyResultList[keyResultList.length - 1].id + 1
         : 0,
@@ -25,7 +33,8 @@ export const KeyResultForm = () => {
 
     try {
       sendKeyResult(data);
-      setKeyResult({ id: 0, description: "", progress: "" });
+      setKeyResult({ id: 0, description: "", progress: 0 });
+      setProgressInput("0");
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
     }
@@ -58,7 +67,7 @@ export const KeyResultForm = () => {
         max={100}
         inputMode="numeric"
         name={"progress"}
-        value={keyResult.progress}
+        value={progressInput}
         onChange={inputHandler}
         placeholder={"Progress"}
         className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"

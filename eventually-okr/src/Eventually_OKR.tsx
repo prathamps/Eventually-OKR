@@ -38,7 +38,13 @@ function Eventually_OKR_Form({
       const objectiveRes = await fetch(`${apiBase}/objectives`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ objective: objectiveValue }),
+        body: JSON.stringify({
+          title: objectiveValue,
+          keyResults: keyResultList.map((kr) => ({
+            description: kr.description,
+            progress: Number(kr.progress),
+          })),
+        }),
       });
 
       if (!objectiveRes.ok) {
@@ -47,29 +53,12 @@ function Eventually_OKR_Form({
 
       const createdObjective: OKR = await objectiveRes.json();
 
-      const createdKeyResults = await Promise.all(
-        keyResultList.map(async (kr) => {
-          const res = await fetch(`${apiBase}/keyresult`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              objectiveId: createdObjective.id,
-              description: kr.description,
-              progress: Number(kr.progress),
-            }),
-          });
-
-          if (!res.ok) {
-            throw new Error(`Failed to save key result (${res.status}).`);
-          }
-
-          return res.json();
-        }),
-      );
-
       setOkrList((prev) => [
         ...prev,
-        { ...createdObjective, keyResults: createdKeyResults },
+        {
+          ...createdObjective,
+          keyResults: createdObjective.keyResults ?? [],
+        },
       ]);
 
       setObjective("");

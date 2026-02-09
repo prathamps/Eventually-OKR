@@ -4,12 +4,17 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  UseFilters,
 } from '@nestjs/common';
 import { ObjectivesService } from './objectives.service';
 import { ObjectiveDto } from './dto/objectiveDto';
+import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
+import { ObjectivesFilter } from './objectivesFilter';
 
+@UseFilters(ObjectivesFilter)
 @Controller('objectives')
 export class ObjectivesController {
   constructor(private readonly objectivesService: ObjectivesService) {}
@@ -20,25 +25,25 @@ export class ObjectivesController {
   }
 
   @Get(':objectiveId')
-  getById(@Param('objectiveId') objectiveId: number) {
+  getById(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
     return this.objectivesService.getById(objectiveId);
   }
 
   @Post()
-  create(@Body() createObjectiveDto: ObjectiveDto) {
+  create(@Body() createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
     return this.objectivesService.create(createObjectiveDto);
   }
 
   @Patch(':objectiveId')
   update(
-    @Param('objectiveId') objectiveId: number,
+    @Param('objectiveId', ParseIntPipe) objectiveId: number,
     @Body() updateObjectiveDto: ObjectiveDto,
   ) {
     return this.objectivesService.update(objectiveId, updateObjectiveDto);
   }
 
   @Delete(':objectiveId')
-  delete(@Param('objectiveId') objectiveId: number) {
+  delete(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
     return this.objectivesService.delete(objectiveId);
   }
 }

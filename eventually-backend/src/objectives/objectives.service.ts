@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { Objective } from '../../generated/prisma/client';
+import { Objective, Prisma } from '../../generated/prisma/client';
+import type { PrismaClient } from '../../generated/prisma/client';
 import { ObjectiveDto } from './dto/objectiveDto';
+import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
 
 @Injectable()
 export class ObjectivesService {
@@ -16,17 +18,37 @@ export class ObjectivesService {
   }
 
   getById(objectiveId: number): Promise<Objective> {
-    return this.prismaService.objective.findUnique({
+    return this.prismaService.objective.findUniqueOrThrow({
       where: {
         id: objectiveId,
       },
     });
   }
 
-  create(createObjectiveDto: ObjectiveDto) {
-    return this.prismaService.objective.create({
-      data: createObjectiveDto,
-    });
+  create(createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
+    return this.prismaService.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        const prisma = tx as PrismaClient;
+        const { keyResults, ...objectiveData } = createObjectiveDto;
+        const objective = await prisma.objective.create({
+          data: objectiveData,
+        });
+
+        if (keyResults?.length) {
+          await prisma.keyResult.createMany({
+            data: keyResults.map((keyResult) => ({
+              ...keyResult,
+              objectiveId: objective.id,
+            })),
+          });
+        }
+
+        return prisma.objective.findUnique({
+          where: { id: objective.id },
+          include: { keyResults: true },
+        });
+      },
+    );
   }
 
   update(objectiveId: number, updateObjectiveDto: ObjectiveDto) {

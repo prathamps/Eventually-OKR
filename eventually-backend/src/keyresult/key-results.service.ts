@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { UpdateKeyResultDto } from './dto/updateKeyResultDto';
-import { CreateKeyResultDto } from './dto/createKeyResultDto';
+import { KeyResultDto } from './dto/keyResultDto';
 
 @Injectable()
 export class KeyResultsService {
@@ -15,7 +15,7 @@ export class KeyResultsService {
     });
   }
 
-  create(createKeyResultDto: CreateKeyResultDto, objectiveId: number) {
+  create(createKeyResultDto: KeyResultDto, objectiveId: number) {
     return this.prismaService.keyResult.create({
       data: {
         ...createKeyResultDto,
