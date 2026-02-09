@@ -31,16 +31,22 @@ const ObjectiveEditForm = ({
   onClose,
 }: ObjectiveEditFormProps) => {
   const [draftTitle, setDraftTitle] = useState(objective.title);
+  const [formError, setFormError] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const nextTitle = draftTitle.trim();
     if (!nextTitle) {
-      alert("Please enter an objective.");
+      setFormError("Please enter an objective.");
       return;
     }
     const saved = await onSave(objective.id, nextTitle);
-    if (saved) onClose();
+    if (saved) {
+      setFormError(null);
+      onClose();
+      return;
+    }
+    setFormError("Unable to save objective.");
   }
 
   return (
@@ -48,6 +54,11 @@ const ObjectiveEditForm = ({
       onSubmit={handleSubmit}
       className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5"
     >
+      {formError ? (
+        <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+          {formError}
+        </div>
+      ) : null}
       <div className="flex flex-col gap-2">
         <label
           htmlFor={`objective-${objective.id}`}
@@ -95,32 +106,36 @@ const OkrList = ({
   const [activeKeyResult, setActiveKeyResult] =
     useState<ActiveKeyResult | null>(null);
   const [progressInput, setProgressInput] = useState("");
+  const [progressError, setProgressError] = useState<string | null>(null);
 
   const closeProgressModal = () => {
     setActiveKeyResult(null);
     setProgressInput("");
+    setProgressError(null);
   };
 
   const openProgressModal = (objectiveId: number, keyResult: KeyResult) => {
     setActiveKeyResult({ objectiveId, keyResult });
     setProgressInput(String(keyResult.progress ?? 0));
+    setProgressError(null);
   };
 
   const saveProgress = () => {
     if (!activeKeyResult) return;
     const nextProgress = Number(progressInput);
     if (Number.isNaN(nextProgress)) {
-      alert("Please enter a valid progress value.");
+      setProgressError("Please enter a valid progress value.");
       return;
     }
     if (nextProgress < 0 || nextProgress > 100) {
-      alert("Progress should be in the range 0-100.");
+      setProgressError("Progress should be in the range 0-100.");
       return;
     }
 
     onUpdateKeyResult(activeKeyResult.objectiveId, activeKeyResult.keyResult.id, {
       progress: nextProgress,
     });
+    setProgressError(null);
     closeProgressModal();
   };
 
@@ -241,6 +256,11 @@ const OkrList = ({
           <div className="text-base font-semibold text-zinc-900">
             {activeKeyResult?.keyResult.description}
           </div>
+          {progressError ? (
+            <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+              {progressError}
+            </div>
+          ) : null}
           <div className="flex flex-col gap-2">
             <label htmlFor="progress-edit" className="text-lg font-semibold">
               Progress

@@ -9,6 +9,7 @@ export const KeyResultForm = () => {
     progress: 0,
   });
   const [progressInput, setProgressInput] = useState("0");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const { keyResultList, sendKeyResult } = useContext(KeyResultContext);
 
@@ -35,8 +36,9 @@ export const KeyResultForm = () => {
       sendKeyResult(data);
       setKeyResult({ id: 0, description: "", progress: 0 });
       setProgressInput("0");
+      setFormError(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setFormError(err instanceof Error ? err.message : String(err));
     }
   }
   return (
@@ -45,6 +47,11 @@ export const KeyResultForm = () => {
         "flex flex-col gap-3 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5 "
       }
     >
+      {formError ? (
+        <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+          {formError}
+        </div>
+      ) : null}
       <label htmlFor={"description"} className="text-lg font-semibold">
         Key Results
       </label>

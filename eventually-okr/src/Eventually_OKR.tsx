@@ -13,18 +13,20 @@ type EventuallyOkrProps = {
 function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
   const { keyResultList, setKeyResultList } = useContext(KeyResultContext);
   const [objective, setObjective] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement | null>(null);
 
   async function submitObjectives(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
+    setFormError(null);
 
     const objectiveValue = objective.trim();
     if (!objectiveValue) {
-      alert("Please enter an objective.");
+      setFormError("Please enter an objective.");
       return;
     }
     if (!keyResultList.length) {
-      alert("Please add at least one key result.");
+      setFormError("Please add at least one key result.");
       return;
     }
 
@@ -42,7 +44,7 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
       });
 
       if (!objectiveRes.ok) {
-        alert(`Failed to save objective (${objectiveRes.status}).`);
+        setFormError(`Failed to save objective (${objectiveRes.status}).`);
         return;
       }
 
@@ -60,7 +62,7 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
       setKeyResultList([]);
       formRef.current?.reset();
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setFormError(err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -69,54 +71,71 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
       <form
         ref={formRef}
         className={
-          "w-full max-w-xl h-fit flex flex-col gap-4 p-6 rounded-3xl border border-[#c7c7cc] bg-white/60"
+          "w-full max-w-4xl h-fit flex flex-col gap-4 p-6 rounded-3xl border border-[#c7c7cc] bg-white/60"
         }
         onSubmit={submitObjectives}
       >
-        <div className="flex flex-col gap-2">
-          <label
-            htmlFor="objectives"
-            className="text-lg font-semibold text-zinc-900"
-          >
-            Objectives
-          </label>
-          <input
-            id="objectives"
-            type="text"
-            placeholder="Objectives"
-            name="objectives"
-            value={objective}
-            onChange={(e) => setObjective(e.target.value)}
-            className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
-            required
-          />
-        </div>
+        {formError ? (
+          <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+            {formError}
+          </div>
+        ) : null}
+        <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <label
+                htmlFor="objectives"
+                className="text-lg font-semibold text-zinc-900"
+              >
+                Objectives
+              </label>
+              <input
+                id="objectives"
+                type="text"
+                placeholder="Objectives"
+                name="objectives"
+                value={objective}
+                onChange={(e) => setObjective(e.target.value)}
+                className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+                required
+              />
+            </div>
 
-        <KeyResultForm />
+            <KeyResultForm />
 
-        <KeyResultList />
+            <div className="mt-2 flex justify-around gap-4">
+              <button
+                type="submit"
+                className={
+                  "min-w-32 rounded-full border border-[#e5e5ea] text-[#007AFF] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
+                }
+              >
+                Submit
+              </button>
+              <button
+                type="reset"
+                className={
+                  "min-w-32 rounded-full border border-[#e5e5ea] text-[#FF3B30] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
+                }
+                onClick={() => {
+                  setObjective("");
+                  setKeyResultList([]);
+                  setFormError(null);
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </div>
 
-        <div className="mt-2 flex justify-around gap-4">
-          <button
-            type="submit"
-            className={
-              "min-w-32 rounded-full border border-[#e5e5ea] text-[#007AFF] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
-            }
-          >
-            Submit
-          </button>
-          <button
-            type="reset"
-            className={
-              "min-w-32 rounded-full border border-[#e5e5ea] text-[#FF3B30] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
-            }
-            onClick={() => {
-              setObjective("");
-              setKeyResultList([]);
-            }}
-          >
-            Clear
-          </button>
+          <div className="flex flex-col gap-3">
+            <div className="text-lg font-semibold text-zinc-900">
+              Key Results
+            </div>
+            <div className="max-h-[45vh] overflow-y-auto pr-1">
+              <KeyResultList />
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -127,9 +146,6 @@ function EventuallyOkr({ setOkrList, apiBase }: EventuallyOkrProps) {
   return (
     <KeyResultProvider>
       <div className="flex flex-col items-center px-4 py-6">
-        <h2 className="mb-4 text-2xl font-bold tracking-tight text-zinc-900">
-          Add OKR
-        </h2>
         <EventuallyOkrForm setOkrList={setOkrList} apiBase={apiBase} />
       </div>
     </KeyResultProvider>

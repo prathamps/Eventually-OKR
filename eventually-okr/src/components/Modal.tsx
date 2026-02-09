@@ -55,7 +55,7 @@ const Modal = ({
     typeof children === "function" ? children({ close: closeModal }) : children;
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 sm:items-center">
-      <div className="w-full max-w-2xl rounded-3xl border border-[#e5e5ea] bg-white shadow-xl">
+      <div className="w-full max-w-5xl rounded-3xl border border-[#e5e5ea] bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-[#e5e5ea] px-5 py-4">
           <div className="text-lg font-semibold text-zinc-900">{title}</div>
           <button

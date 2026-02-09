@@ -6,8 +6,27 @@ import type { OKR } from "../types/okr_form.types.ts";
 
 const API_BASE = "http://localhost:3001";
 
+type ConfirmState =
+  | {
+      kind: "objective";
+      objectiveId: number;
+      title: string;
+      message: string;
+      confirmLabel?: string;
+    }
+  | {
+      kind: "keyResult";
+      objectiveId: number;
+      keyResultId: number;
+      title: string;
+      message: string;
+      confirmLabel?: string;
+    };
+
 const Home = () => {
   const [okrList, setOkrList] = useState<OKR[]>([]);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
 
   async function loadOkrs() {
     try {
@@ -15,8 +34,9 @@ const Home = () => {
       if (!res.ok) throw new Error(`Failed to load OKRs (${res.status}).`);
       const result = await res.json();
       setOkrList(result);
+      setNotice(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setNotice(err instanceof Error ? err.message : String(err));
     }
   }
 
@@ -24,19 +44,27 @@ const Home = () => {
     loadOkrs();
   }, []);
 
-  async function deleteObjective(objectiveId: number) {
-    const confirmed = confirm("Delete this objective?");
-    if (!confirmed) return;
-
+  async function performDeleteObjective(objectiveId: number) {
     try {
       const res = await fetch(`${API_BASE}/objectives/${objectiveId}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error(`Failed to delete OKR (${res.status}).`);
       setOkrList((prev) => prev.filter((o) => o.id !== objectiveId));
+      setNotice(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setNotice(err instanceof Error ? err.message : String(err));
     }
+  }
+
+  function requestDeleteObjective(objectiveId: number) {
+    setConfirmState({
+      kind: "objective",
+      objectiveId,
+      title: "Delete OKR",
+      message: "Delete this objective?",
+      confirmLabel: "Delete",
+    });
   }
 
   async function saveObjectiveTitle(
@@ -59,17 +87,18 @@ const Home = () => {
           o.id === objectiveId ? { ...o, title: nextObjective } : o,
         ),
       );
+      setNotice(null);
       return true;
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setNotice(err instanceof Error ? err.message : String(err));
       return false;
     }
   }
 
-  async function deleteKeyResult(objectiveId: number, keyResultId: number) {
-    const confirmed = confirm("Delete this key result?");
-    if (!confirmed) return;
-
+  async function performDeleteKeyResult(
+    objectiveId: number,
+    keyResultId: number,
+  ) {
     try {
       setOkrList((prev) =>
         prev.map((o) =>
@@ -92,9 +121,21 @@ const Home = () => {
       );
       if (!res.ok)
         throw new Error(`Failed to delete key result (${res.status}).`);
+      setNotice(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setNotice(err instanceof Error ? err.message : String(err));
     }
+  }
+
+  function requestDeleteKeyResult(objectiveId: number, keyResultId: number) {
+    setConfirmState({
+      kind: "keyResult",
+      objectiveId,
+      keyResultId,
+      title: "Delete Key Result",
+      message: "Delete this key result?",
+      confirmLabel: "Delete",
+    });
   }
 
   async function updateKeyResult(
@@ -126,15 +167,29 @@ const Home = () => {
       );
       if (!res.ok)
         throw new Error(`Failed to update key result (${res.status}).`);
+      setNotice(null);
     } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+      setNotice(err instanceof Error ? err.message : String(err));
       loadOkrs();
     }
+  }
+
+  async function handleConfirm(confirm: ConfirmState) {
+    if (confirm.kind === "objective") {
+      await performDeleteObjective(confirm.objectiveId);
+      return;
+    }
+    await performDeleteKeyResult(confirm.objectiveId, confirm.keyResultId);
   }
 
   return (
     <div className="min-h-dvh px-4 py-10">
       <div className="mx-auto w-full max-w-4xl">
+        {notice ? (
+          <div className="mb-4 rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+            {notice}
+          </div>
+        ) : null}
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-zinc-900">
@@ -151,12 +206,49 @@ const Home = () => {
 
         <OkrList
           okr={okrList}
-          onDeleteObjective={deleteObjective}
+          onDeleteObjective={requestDeleteObjective}
           onSaveObjectiveTitle={saveObjectiveTitle}
-          onDeleteKeyResult={deleteKeyResult}
+          onDeleteKeyResult={requestDeleteKeyResult}
           onUpdateKeyResult={updateKeyResult}
         />
       </div>
+
+      <Modal
+        isOpen={Boolean(confirmState)}
+        hideTrigger
+        title={confirmState?.title ?? "Confirm"}
+        onOpenChange={(open) => {
+          if (!open) setConfirmState(null);
+        }}
+      >
+        {({ close }) => (
+          <div className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5">
+            <div className="text-base font-semibold text-zinc-900">
+              {confirmState?.message}
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={close}
+                className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!confirmState) return;
+                  void handleConfirm(confirmState);
+                  close();
+                }}
+                className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+              >
+                {confirmState?.confirmLabel ?? "Confirm"}
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };
