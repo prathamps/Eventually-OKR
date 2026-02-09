@@ -1,10 +1,9 @@
 import { KeyResultsService } from './key-results.service';
 import { Test } from '@nestjs/testing';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma.service';
 import { KeyResult } from '../../generated/prisma/client';
-import { KeyResultDtoType } from './dto/key-result-dto.type';
-import { ObjectiveNotFoundError } from '../objective/error/objectiveNotFoundError';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+import { KeyResultDto } from './dto/keyResultDto';
+import { UpdateKeyResultDto } from './dto/updateKeyResultDto';
 
 describe('KeyResultsService', () => {
   let keyResultsService: KeyResultsService;
@@ -12,12 +11,9 @@ describe('KeyResultsService', () => {
   const mockPrismaService = {
     keyResult: {
       findMany: jest.fn(),
-      findUnique: jest.fn(),
       update: jest.fn(),
-      findUniqueOrThrow: jest.fn(),
-    },
-    objective: {
-      findUnique: jest.fn(),
+      create: jest.fn(),
+      delete: jest.fn(),
     },
   };
 
@@ -35,55 +31,29 @@ describe('KeyResultsService', () => {
     jest.clearAllMocks();
   });
 
-  describe('getAll', () => {
-    it('should return an array of key results', async () => {
-      const mockKeyResults: KeyResult[] = [
-        {
-          id: '1',
-          description: 'Complete the project',
-          progress: 100,
-          is_completed: true,
-          objectiveId: '1',
-        },
-        {
-          id: '2',
-          description: 'Complete the 2nd project ',
-          progress: 75,
-          is_completed: false,
-          objectiveId: '2',
-        },
-      ];
-
-      mockPrismaService.keyResult.findMany.mockResolvedValue(mockKeyResults);
-
-      const result = await keyResultsService.fetchAll();
-
-      expect(result).toEqual(mockKeyResults);
-      expect(mockPrismaService.keyResult.findMany).toHaveBeenCalled();
-    });
-  });
   describe('getByObjectiveId', () => {
     it('should return an array of key results for a given objective ID', async () => {
-      const objectiveId = '1';
+      const objectiveId = 1;
       const mockKeyResults: KeyResult[] = [
         {
-          id: '1',
+          id: 1,
           description: 'Complete the project',
           progress: 100,
-          is_completed: true,
-          objectiveId: '1',
+          isCompleted: true,
+          objectiveId: 1,
+          createdAt: new Date(),
         },
         {
-          id: '2',
+          id: 2,
           description: 'Complete the 2nd project ',
           progress: 75,
-          is_completed: false,
-          objectiveId: '1',
+          isCompleted: false,
+          objectiveId: 1,
+          createdAt: new Date(),
         },
       ];
 
       mockPrismaService.keyResult.findMany.mockResolvedValue(mockKeyResults);
-      mockPrismaService.objective.findUnique.mockResolvedValue(true);
       const result = await keyResultsService.getByObjectiveId(objectiveId);
 
       expect(result).toEqual(mockKeyResults);
@@ -93,77 +63,64 @@ describe('KeyResultsService', () => {
         },
       });
     });
-
-    it('should throw an error if the objective does not exist', async () => {
-      const objectiveId = 'non-existent-id';
-      mockPrismaService.objective.findUnique.mockResolvedValue(null);
-
-      const result = keyResultsService.getByObjectiveId(objectiveId);
-
-      await expect(result).rejects.toThrow(ObjectiveNotFoundError);
-      expect(mockPrismaService.keyResult.findMany).not.toHaveBeenCalled();
-    });
   });
-  describe('getById', () => {
-    it('should return a key result for a given key result ID', async () => {
-      const keyResultId = '1';
-      const mockKeyResult: KeyResult = {
-        id: '1',
+
+  describe('create', () => {
+    it('should create a key result for a given objective ID and DTO', async () => {
+      const objectiveId = 2;
+      const keyResultDto: KeyResultDto = {
         description: 'Complete the project',
         progress: 100,
-        is_completed: true,
-        objectiveId: '1',
       };
-      mockPrismaService.keyResult.findUniqueOrThrow.mockResolvedValue(
-        mockKeyResult,
+      const mockCreatedKeyResult: KeyResult = {
+        id: 1,
+        description: 'Complete the project',
+        progress: 100,
+        isCompleted: true,
+        objectiveId: 2,
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.keyResult.create.mockResolvedValue(
+        mockCreatedKeyResult,
       );
-      const response = await keyResultsService.getById(keyResultId);
-      expect(response).toEqual(mockKeyResult);
-      expect(
-        mockPrismaService.keyResult.findUniqueOrThrow,
-      ).toHaveBeenCalledWith({
-        where: {
-          id: keyResultId,
+
+      const response = await keyResultsService.create(
+        keyResultDto,
+        objectiveId,
+      );
+
+      expect(response).toEqual(mockCreatedKeyResult);
+      expect(mockPrismaService.keyResult.create).toHaveBeenCalledWith({
+        data: {
+          ...keyResultDto,
+          objectiveId,
         },
       });
     });
-    it('should throw an error if the key result does not exist', async () => {
-      const keyResultId = 'non-existent-id';
-
-      const error = new PrismaClientKnownRequestError('Not found', {
-        code: 'P2025',
-        clientVersion: '1.0.0',
-      });
-
-      mockPrismaService.keyResult.findUniqueOrThrow.mockRejectedValue(error);
-
-      const response = keyResultsService.getById(keyResultId);
-
-      await expect(response).rejects.toThrow(
-        `KeyResult with id ${keyResultId} not found`,
-      );
-    });
   });
+
   describe('update', () => {
     it('should update a key result for a given key result ID and key result DTO', async () => {
-      const keyResultId = '1';
-      const keyResultDto: KeyResultDtoType = {
+      const keyResultId = 1;
+      const keyResultDto: Partial<UpdateKeyResultDto> = {
         description: 'Complete the project',
         progress: 100,
       };
       const mockUpdatedKeyResult: KeyResult = {
-        id: '1',
+        id: 1,
         description: 'Complete the project',
         progress: 100,
-        is_completed: true,
-        objectiveId: '1',
+        isCompleted: true,
+        objectiveId: 1,
+        createdAt: new Date(),
       };
       mockPrismaService.keyResult.update.mockResolvedValue(
         mockUpdatedKeyResult,
       );
       const response = await keyResultsService.update(
-        keyResultId,
         keyResultDto,
+        keyResultId,
       );
       expect(response).toEqual(mockUpdatedKeyResult);
       expect(mockPrismaService.keyResult.update).toHaveBeenCalledWith({
@@ -173,6 +130,30 @@ describe('KeyResultsService', () => {
         data: {
           ...keyResultDto,
         },
+      });
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a key result for a given key result ID', async () => {
+      const keyResultId = 1;
+      const mockDeletedKeyResult: KeyResult = {
+        id: 1,
+        description: 'Complete the project',
+        progress: 100,
+        isCompleted: true,
+        objectiveId: 1,
+        createdAt: new Date(),
+      };
+
+      mockPrismaService.keyResult.delete.mockResolvedValue(
+        mockDeletedKeyResult,
+      );
+      const response = await keyResultsService.delete(keyResultId);
+
+      expect(response).toEqual(mockDeletedKeyResult);
+      expect(mockPrismaService.keyResult.delete).toHaveBeenCalledWith({
+        where: { id: keyResultId },
       });
     });
   });

@@ -5,24 +5,18 @@ import { KeyResultContext } from "./providers/KeyResultContext.tsx";
 import { KeyResultProvider } from "./providers/KeyResultProvider.tsx";
 import type { OKR } from "./types/okr_form.types.ts";
 
-type EventuallyOKRProps = {
-  setOkrList: React.Dispatch<React.SetStateAction<OKR[]>>;
-  apiBase: string;
+type EventuallyOkrProps = {
+  readonly setOkrList: React.Dispatch<React.SetStateAction<OKR[]>>;
+  readonly apiBase: string;
 };
 
-function Eventually_OKR_Form({
-  setOkrList,
-  apiBase,
-}: {
-  setOkrList: React.Dispatch<React.SetStateAction<OKR[]>>;
-  apiBase: string;
-}) {
+function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
   const { keyResultList, setKeyResultList } = useContext(KeyResultContext);
   const [objective, setObjective] = useState("");
   const formRef = useRef<HTMLFormElement | null>(null);
 
-  async function submitObjectives(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function submitObjectives(event: React.SyntheticEvent<HTMLFormElement>) {
+    event.preventDefault();
 
     const objectiveValue = objective.trim();
     if (!objectiveValue) {
@@ -48,7 +42,8 @@ function Eventually_OKR_Form({
       });
 
       if (!objectiveRes.ok) {
-        throw new Error(`Failed to save objective (${objectiveRes.status}).`);
+        alert(`Failed to save objective (${objectiveRes.status}).`);
+        return;
       }
 
       const createdObjective: OKR = await objectiveRes.json();
@@ -88,12 +83,12 @@ function Eventually_OKR_Form({
           <input
             id="objectives"
             type="text"
-            placeholder={"Objectives"}
-            name={"objectives"}
+            placeholder="Objectives"
+            name="objectives"
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
             className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
-            required={true}
+            required
           />
         </div>
 
@@ -128,17 +123,17 @@ function Eventually_OKR_Form({
   );
 }
 
-function Eventually_OKR({ setOkrList, apiBase }: EventuallyOKRProps) {
+function EventuallyOkr({ setOkrList, apiBase }: EventuallyOkrProps) {
   return (
     <KeyResultProvider>
       <div className="flex flex-col items-center px-4 py-6">
         <h2 className="mb-4 text-2xl font-bold tracking-tight text-zinc-900">
           Add OKR
         </h2>
-        <Eventually_OKR_Form setOkrList={setOkrList} apiBase={apiBase} />
+        <EventuallyOkrForm setOkrList={setOkrList} apiBase={apiBase} />
       </div>
     </KeyResultProvider>
   );
 }
 
-export default Eventually_OKR;
+export default EventuallyOkr;

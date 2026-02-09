@@ -1,14 +1,11 @@
+import { type FormEvent, useState } from "react";
 import type { KeyResult, OKR } from "../types/okr_form.types.ts";
+import Modal from "./Modal.tsx";
 
 type OKRListProps = {
   okr: OKR[];
   onDeleteObjective: (objectiveId: number) => void;
-  onStartEditObjective: (objectiveId: number, currentTitle: string) => void;
-  onCancelEditObjective: () => void;
-  onSaveEditObjective: (objectiveId: number) => void;
-  editingObjectiveId: number | null;
-  editingTitle: string;
-  onEditingTitleChange: (value: string) => void;
+  onSaveObjectiveTitle: (objectiveId: number, title: string) => Promise<boolean>;
   onDeleteKeyResult: (objectiveId: number, keyResultId: number) => void;
   onUpdateKeyResult: (
     objectiveId: number,
@@ -17,69 +14,138 @@ type OKRListProps = {
   ) => void;
 };
 
+type ActiveKeyResult = {
+  objectiveId: number;
+  keyResult: KeyResult;
+};
+
+type ObjectiveEditFormProps = {
+  objective: OKR;
+  onSave: (objectiveId: number, title: string) => Promise<boolean>;
+  onClose: () => void;
+};
+
+const ObjectiveEditForm = ({
+  objective,
+  onSave,
+  onClose,
+}: ObjectiveEditFormProps) => {
+  const [draftTitle, setDraftTitle] = useState(objective.title);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextTitle = draftTitle.trim();
+    if (!nextTitle) {
+      alert("Please enter an objective.");
+      return;
+    }
+    const saved = await onSave(objective.id, nextTitle);
+    if (saved) onClose();
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5"
+    >
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor={`objective-${objective.id}`}
+          className="text-lg font-semibold text-zinc-900"
+        >
+          Objectives
+        </label>
+        <input
+          id={`objective-${objective.id}`}
+          type="text"
+          placeholder="Objectives"
+          name="objective"
+          value={draftTitle}
+          onChange={(e) => setDraftTitle(e.target.value)}
+          className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+          required
+        />
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  );
+};
+
 const OkrList = ({
   okr,
   onDeleteObjective,
-  onStartEditObjective,
-  onCancelEditObjective,
-  onSaveEditObjective,
-  editingObjectiveId,
-  editingTitle,
-  onEditingTitleChange,
+  onSaveObjectiveTitle,
   onDeleteKeyResult,
   onUpdateKeyResult,
 }: OKRListProps) => {
+  const [activeKeyResult, setActiveKeyResult] =
+    useState<ActiveKeyResult | null>(null);
+  const [progressInput, setProgressInput] = useState("");
+
+  const closeProgressModal = () => {
+    setActiveKeyResult(null);
+    setProgressInput("");
+  };
+
+  const openProgressModal = (objectiveId: number, keyResult: KeyResult) => {
+    setActiveKeyResult({ objectiveId, keyResult });
+    setProgressInput(String(keyResult.progress ?? 0));
+  };
+
+  const saveProgress = () => {
+    if (!activeKeyResult) return;
+    const nextProgress = Number(progressInput);
+    if (Number.isNaN(nextProgress)) {
+      alert("Please enter a valid progress value.");
+      return;
+    }
+    if (nextProgress < 0 || nextProgress > 100) {
+      alert("Progress should be in the range 0-100.");
+      return;
+    }
+
+    onUpdateKeyResult(activeKeyResult.objectiveId, activeKeyResult.keyResult.id, {
+      progress: nextProgress,
+    });
+    closeProgressModal();
+  };
+
   return (
-    <div className="space-y-4">
-      {okr?.map((objective: OKR) => {
-        const isEditing = editingObjectiveId === objective.id;
-        return (
+    <>
+      <div className="space-y-4">
+        {okr?.map((objective: OKR) => (
           <div
             key={objective.id}
             className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60"
           >
             <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={editingTitle}
-                  onChange={(e) => onEditingTitleChange(e.target.value)}
-                  className="w-full rounded-2xl border border-[#e5e5ea] bg-white px-3 py-2 text-base font-semibold text-zinc-900 outline-none focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
-                />
-              ) : (
-                <h2 className="text-lg font-semibold text-zinc-900">
-                  {objective.title}
-                </h2>
-              )}
+              <h2 className="text-lg font-semibold text-zinc-900">
+                {objective.title}
+              </h2>
               <div className="flex items-center gap-2">
-                {isEditing ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => onSaveEditObjective(objective.id)}
-                      className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={onCancelEditObjective}
-                      className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onStartEditObjective(objective.id, objective.title)
-                    }
-                    className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
-                  >
-                    Edit
-                  </button>
-                )}
+                <Modal triggerLabel="Edit" title="Edit OKR">
+                  {({ close }) => (
+                    <ObjectiveEditForm
+                      objective={objective}
+                      onSave={onSaveObjectiveTitle}
+                      onClose={close}
+                    />
+                  )}
+                </Modal>
                 <button
                   type="button"
                   onClick={() => onDeleteObjective(objective.id)}
@@ -101,10 +167,7 @@ const OkrList = ({
                     key={keyResult.id}
                     className="flex items-center justify-between gap-4 px-5 py-4"
                   >
-                    <label
-                      htmlFor={checkboxId}
-                      className="min-w-0 flex items-center gap-3"
-                    >
+                    <div className="min-w-0 flex items-center gap-3">
                       <input
                         id={checkboxId}
                         type="checkbox"
@@ -115,31 +178,33 @@ const OkrList = ({
                             isCompleted: e.target.checked,
                           })
                         }
+                        aria-label={`Mark ${keyResult.description} complete`}
                         className="h-4 w-4 accent-[#007AFF]"
                       />
-                      <span className="truncate text-base font-medium text-zinc-900">
-                        {keyResult.description}
-                      </span>
-                    </label>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openProgressModal(objective.id, keyResult)
+                        }
+                        className="min-w-0 flex-1 text-left"
+                        aria-label={`Edit progress for ${keyResult.description}`}
+                      >
+                        <span className="truncate text-base font-medium text-zinc-900 hover:text-[#007AFF]">
+                          {keyResult.description}
+                        </span>
+                      </button>
+                    </div>
                     <div className="flex items-center gap-3">
-                      <input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={keyResult.progress}
-                        onChange={(e) => {
-                          const nextProgress = Number(e.target.value);
-                          if (Number.isNaN(nextProgress)) return;
-                          onUpdateKeyResult(objective.id, keyResult.id, {
-                            progress: nextProgress,
-                          });
-                        }}
-                        className="w-20 rounded-2xl border border-[#e5e5ea] bg-white px-3 py-1.5 text-base font-semibold text-zinc-700 outline-none focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
-                        aria-label="Progress"
-                      />
-                      <div className="whitespace-nowrap tabular-nums text-base font-semibold text-zinc-600">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openProgressModal(objective.id, keyResult)
+                        }
+                        className="rounded-2xl border border-[#e5e5ea] bg-white px-3 py-1.5 text-base font-semibold text-zinc-700 hover:bg-[#f2f2f7]"
+                        aria-label={`Progress ${progressText}. Click to edit.`}
+                      >
                         {progressText}
-                      </div>
+                      </button>
                       <button
                         type="button"
                         onClick={() =>
@@ -155,9 +220,62 @@ const OkrList = ({
               })}
             </ul>
           </div>
-        );
-      })}
-    </div>
+        ))}
+      </div>
+
+      <Modal
+        isOpen={Boolean(activeKeyResult)}
+        hideTrigger
+        title="Update Progress"
+        onOpenChange={(open) => {
+          if (!open) closeProgressModal();
+        }}
+      >
+        <form
+          className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5"
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveProgress();
+          }}
+        >
+          <div className="text-base font-semibold text-zinc-900">
+            {activeKeyResult?.keyResult.description}
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="progress-edit" className="text-lg font-semibold">
+              Progress
+            </label>
+            <input
+              id="progress-edit"
+              type="number"
+              min={0}
+              max={100}
+              inputMode="numeric"
+              value={progressInput}
+              onChange={(event) => setProgressInput(event.target.value)}
+              placeholder="Progress"
+              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+            />
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={closeProgressModal}
+              className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </>
   );
 };
+
 export default OkrList;

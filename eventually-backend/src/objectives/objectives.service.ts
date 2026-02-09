@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { Objective, Prisma } from '../../generated/prisma/client';
-import type { PrismaClient } from '../../generated/prisma/client';
+import { Objective, Prisma } from '@prisma/client';
+import type { PrismaClient } from '@prisma/client';
 import { ObjectiveDto } from './dto/objectiveDto';
 import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
 

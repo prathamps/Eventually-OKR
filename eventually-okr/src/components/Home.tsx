@@ -1,4 +1,4 @@
-import Eventually_OKR from "../Eventually_OKR.tsx";
+import EventuallyOkr from "../Eventually_OKR.tsx";
 import Modal from "./Modal.tsx";
 import OkrList from "./OkrList.tsx";
 import { useEffect, useState } from "react";
@@ -8,10 +8,6 @@ const API_BASE = "http://localhost:3001";
 
 const Home = () => {
   const [okrList, setOkrList] = useState<OKR[]>([]);
-  const [editingObjectiveId, setEditingObjectiveId] = useState<number | null>(
-    null,
-  );
-  const [editingTitle, setEditingTitle] = useState("");
 
   async function loadOkrs() {
     try {
@@ -43,19 +39,12 @@ const Home = () => {
     }
   }
 
-  function startEditObjective(objectiveId: number, currentTitle: string) {
-    setEditingObjectiveId(objectiveId);
-    setEditingTitle(currentTitle);
-  }
-
-  function cancelEditObjective() {
-    setEditingObjectiveId(null);
-    setEditingTitle("");
-  }
-
-  async function saveEditObjective(objectiveId: number) {
-    const nextObjective = editingTitle.trim();
-    if (!nextObjective) return;
+  async function saveObjectiveTitle(
+    objectiveId: number,
+    title: string,
+  ): Promise<boolean> {
+    const nextObjective = title.trim();
+    if (!nextObjective) return false;
 
     try {
       const res = await fetch(`${API_BASE}/objectives/${objectiveId}`, {
@@ -70,9 +59,10 @@ const Home = () => {
           o.id === objectiveId ? { ...o, title: nextObjective } : o,
         ),
       );
-      cancelEditObjective();
+      return true;
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
+      return false;
     }
   }
 
@@ -155,19 +145,14 @@ const Home = () => {
             </div>
           </div>
           <Modal triggerLabel="Add OKR">
-            <Eventually_OKR setOkrList={setOkrList} apiBase={API_BASE} />
+            <EventuallyOkr setOkrList={setOkrList} apiBase={API_BASE} />
           </Modal>
         </div>
 
         <OkrList
           okr={okrList}
           onDeleteObjective={deleteObjective}
-          onStartEditObjective={startEditObjective}
-          onCancelEditObjective={cancelEditObjective}
-          onSaveEditObjective={saveEditObjective}
-          editingObjectiveId={editingObjectiveId}
-          editingTitle={editingTitle}
-          onEditingTitleChange={setEditingTitle}
+          onSaveObjectiveTitle={saveObjectiveTitle}
           onDeleteKeyResult={deleteKeyResult}
           onUpdateKeyResult={updateKeyResult}
         />
