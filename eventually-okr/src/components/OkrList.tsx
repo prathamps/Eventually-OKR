@@ -5,7 +5,10 @@ import Modal from "./Modal.tsx";
 type OKRListProps = {
   okr: OKR[];
   onDeleteObjective: (objectiveId: number) => void;
-  onSaveObjectiveTitle: (objectiveId: number, title: string) => Promise<boolean>;
+  onSaveObjectiveTitle: (
+    objectiveId: number,
+    title: string,
+  ) => Promise<boolean>;
   onDeleteKeyResult: (objectiveId: number, keyResultId: number) => void;
   onUpdateKeyResult: (
     objectiveId: number,
@@ -132,9 +135,13 @@ const OkrList = ({
       return;
     }
 
-    onUpdateKeyResult(activeKeyResult.objectiveId, activeKeyResult.keyResult.id, {
-      progress: nextProgress,
-    });
+    onUpdateKeyResult(
+      activeKeyResult.objectiveId,
+      activeKeyResult.keyResult.id,
+      {
+        progress: nextProgress,
+      },
+    );
     setProgressError(null);
     closeProgressModal();
   };
@@ -177,6 +184,63 @@ const OkrList = ({
                   typeof keyResult.progress === "number"
                     ? `${keyResult.progress}%`
                     : keyResult.progress;
+                if (keyResult.id % 2 !== 0) {
+                  return (
+                    <li
+                      key={keyResult.id}
+                      className="flex items-center bg-amber-200 justify-between gap-4 px-5 py-4"
+                    >
+                      <div className="min-w-0 flex items-center gap-3">
+                        <input
+                          id={checkboxId}
+                          type="checkbox"
+                          name={checkboxId}
+                          checked={Boolean(keyResult.isCompleted)}
+                          onChange={(e) =>
+                            onUpdateKeyResult(objective.id, keyResult.id, {
+                              isCompleted: e.target.checked,
+                            })
+                          }
+                          aria-label={`Mark ${keyResult.description} complete`}
+                          className="h-4 w-4 accent-[#007AFF]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openProgressModal(objective.id, keyResult)
+                          }
+                          className="min-w-0 flex-1 text-left"
+                          aria-label={`Edit progress for ${keyResult.description}`}
+                        >
+                          <span className="truncate text-base font-medium text-zinc-900 hover:text-[#007AFF]">
+                            {keyResult.description}
+                          </span>
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openProgressModal(objective.id, keyResult)
+                          }
+                          className="rounded-2xl border border-[#e5e5ea] bg-white px-3 py-1.5 text-base font-semibold text-zinc-700 hover:bg-[#f2f2f7]"
+                          aria-label={`Progress ${progressText}. Click to edit.`}
+                        >
+                          {progressText}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onDeleteKeyResult(objective.id, keyResult.id)
+                          }
+                          className="rounded-full border border-[#e5e5ea] px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  );
+                }
                 return (
                   <li
                     key={keyResult.id}
