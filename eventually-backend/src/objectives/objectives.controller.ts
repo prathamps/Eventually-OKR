@@ -29,6 +29,11 @@ export class ObjectivesController {
     return this.objectivesService.getById(objectiveId);
   }
 
+  @Get(':objectiveId/completedness')
+  getCompletedness(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
+    return this.objectivesService.getCompletedness(objectiveId);
+  }
+
   @Post()
   create(@Body() createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
     return this.objectivesService.create(createObjectiveDto);

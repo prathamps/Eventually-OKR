@@ -1,4 +1,4 @@
 export class KeyResultDto {
-  description: string;
-  progress: number;
+  description!: string;
+  progress!: number;
 }

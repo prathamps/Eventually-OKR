@@ -4,7 +4,7 @@ import { KeyResultDto } from '../../keyresult/dto/keyResultDto';
 
 export class CreateObjectiveWithKeyResultsDto {
   @IsString()
-  title: string;
+  title!: string;
 
   @IsOptional()
   @IsArray()

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
-import { Objective, Prisma } from '@prisma/client';
+import { KeyResult, Objective, Prisma } from '@prisma/client';
 import type { PrismaClient } from '@prisma/client';
 import { ObjectiveDto } from './dto/objectiveDto';
 import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
@@ -58,9 +58,35 @@ export class ObjectivesService {
     });
   }
 
+  async getCompletedness(objectiveId: number) {
+    const objective = await this.prismaService.objective.findUniqueOrThrow({
+      where: { id: objectiveId },
+      include: { keyResults: true },
+    });
+
+    return this.checkCompletedness(objective.keyResults);
+  }
+
   delete(objectiveId: number) {
     return this.prismaService.objective.delete({
       where: { id: objectiveId },
     });
+  }
+
+  checkCompletedness(keyResults: KeyResult[]) {
+    if (!keyResults.length) {
+      return { isComplete: true, progress: 0 };
+    }
+
+    const totalProgress = keyResults.reduce(
+      (sum, keyResult) => sum + keyResult.progress,
+      0,
+    );
+    const progress = Math.round(totalProgress / keyResults.length);
+    const isComplete = keyResults.every(
+      (keyResult) => keyResult.progress === 100,
+    );
+
+    return { isComplete, progress };
   }
 }
