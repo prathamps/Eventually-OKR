@@ -236,7 +236,7 @@ const OkrList = ({
                         onClick={() =>
                           onDeleteKeyResult(objective.id, keyResult.id)
                         }
-                        className="rounded-full border border-[#e5e5ea] px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+                        className="rounded-full border border-black px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
                       >
                         Delete
                       </button>
