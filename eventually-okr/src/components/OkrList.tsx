@@ -5,7 +5,10 @@ import Modal from "./Modal.tsx";
 type OKRListProps = {
   okr: OKR[];
   onDeleteObjective: (objectiveId: number) => void;
-  onSaveObjectiveTitle: (objectiveId: number, title: string) => Promise<boolean>;
+  onSaveObjectiveTitle: (
+    objectiveId: number,
+    title: string,
+  ) => Promise<boolean>;
   onDeleteKeyResult: (objectiveId: number, keyResultId: number) => void;
   onUpdateKeyResult: (
     objectiveId: number,
@@ -132,9 +135,13 @@ const OkrList = ({
       return;
     }
 
-    onUpdateKeyResult(activeKeyResult.objectiveId, activeKeyResult.keyResult.id, {
-      progress: nextProgress,
-    });
+    onUpdateKeyResult(
+      activeKeyResult.objectiveId,
+      activeKeyResult.keyResult.id,
+      {
+        progress: nextProgress,
+      },
+    );
     setProgressError(null);
     closeProgressModal();
   };
@@ -171,16 +178,20 @@ const OkrList = ({
               </div>
             </div>
             <ul className="divide-y divide-[#e5e5ea]">
-              {objective.keyResults?.map((keyResult: KeyResult) => {
+              {objective.keyResults?.map((keyResult: KeyResult, index) => {
                 const checkboxId = `kr-${objective.id}-${keyResult.id}`;
                 const progressText =
                   typeof keyResult.progress === "number"
                     ? `${keyResult.progress}%`
                     : keyResult.progress;
+                let bg_color = "bg-white";
+                if (index % 2) {
+                  bg_color = "bg-pink-100";
+                }
                 return (
                   <li
                     key={keyResult.id}
-                    className="flex items-center justify-between gap-4 px-5 py-4"
+                    className={`flex items-center justify-between gap-4 px-5 py-4 ${bg_color}`}
                   >
                     <div className="min-w-0 flex items-center gap-3">
                       <input
