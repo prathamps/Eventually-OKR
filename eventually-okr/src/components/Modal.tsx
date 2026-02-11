@@ -37,7 +37,7 @@ const Modal = ({
     return (
       <button
         className={
-          "rounded-full border border-[#e5e5ea] bg-white/70 text-[#007AFF] px-5 py-2 text-base font-semibold shadow-sm cursor-pointer transition hover:bg-white"
+          "rounded-full border border-[#e5e5ea] bg-pink-50 text-[#007AFF] px-5 py-2 text-base font-semibold shadow-sm cursor-pointer transition hover:bg-white"
         }
         onClick={() => {
           setOpen(true);
