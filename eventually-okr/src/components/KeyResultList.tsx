@@ -6,7 +6,7 @@ export const KeyResultList = () => {
     <div className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60">
       <ol className="divide-y divide-[#e5e5ea]">
         {keyResultList?.map((keyResult, index) => {
-          let bg_color = "bg-white";
+          let bg_color = "bg-amber-200";
           if (index % 2) {
             bg_color = "bg-pink-100";
           }

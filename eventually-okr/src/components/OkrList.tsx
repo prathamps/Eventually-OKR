@@ -184,7 +184,7 @@ const OkrList = ({
                   typeof keyResult.progress === "number"
                     ? `${keyResult.progress}%`
                     : keyResult.progress;
-                let bg_color = "bg-white";
+                let bg_color = "bg-amber-200";
                 if (index % 2) {
                   bg_color = "bg-pink-100";
                 }
