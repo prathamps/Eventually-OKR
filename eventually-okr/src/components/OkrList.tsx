@@ -148,11 +148,11 @@ const OkrList = ({
 
   return (
     <>
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         {okr?.map((objective: OKR) => (
           <div
             key={objective.id}
-            className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60"
+            className="overflow-hidden shadow-sm rounded-3xl border border-[#c7c7cc] bg-white/60"
           >
             <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
               <h2 className="text-lg font-semibold text-zinc-900">
