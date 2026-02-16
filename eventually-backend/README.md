@@ -31,6 +31,20 @@
 $ pnpm install
 ```
 
+## API documentation
+
+Swagger UI is available after the server starts:
+
+```bash
+http://localhost:3000/api
+```
+
+The OpenAPI JSON is also available at:
+
+```bash
+http://localhost:3000/api-json
+```
+
 ## Compile and run the project
 
 ```bash
