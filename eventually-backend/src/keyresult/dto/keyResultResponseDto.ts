@@ -11,12 +11,24 @@ export class KeyResultResponseDto {
   description!: string;
 
   @ApiProperty({
-    description: 'Progress percentage from 0 to 100.',
-    example: 45,
-    minimum: 0,
-    maximum: 100,
+    description: 'Metric for the key result (user-defined).',
+    example: 'users',
   })
-  progress!: number;
+  metric!: string;
+
+  @ApiProperty({
+    description: 'Latest updated value for the key result.',
+    example: 1200,
+    minimum: 0,
+  })
+  updatedValue!: number;
+
+  @ApiProperty({
+    description: 'Target value for the key result.',
+    example: 2000,
+    minimum: 0,
+  })
+  targetValue!: number;
 
   @ApiProperty({
     description: 'Whether the key result is completed.',

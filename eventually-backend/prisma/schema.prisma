@@ -21,11 +21,13 @@ model Objective {
 }
 
 model KeyResult {
-  id          Int       @id @default(autoincrement())
-  progress    Int       @default(0)
-  isCompleted Boolean   @default(false)
-  description String
-  objectiveId Int
-  objective   Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
+  id           Int       @id @default(autoincrement())
+  updatedValue Float     @default(0)
+  targetValue  Float     @default(0)
+  metric       String    @default("")
+  isCompleted  Boolean   @default(false)
+  description  String
+  objectiveId  Int
+  objective    Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
 }

@@ -13,7 +13,12 @@ type OKRListProps = {
   onUpdateKeyResult: (
     objectiveId: number,
     keyResultId: number,
-    updates: { progress?: number; isCompleted?: boolean },
+    updates: {
+      updatedValue?: number;
+      targetValue?: number;
+      metric?: string;
+      isCompleted?: boolean;
+    },
   ) => void;
 };
 
@@ -108,30 +113,51 @@ const OkrList = ({
 }: OKRListProps) => {
   const [activeKeyResult, setActiveKeyResult] =
     useState<ActiveKeyResult | null>(null);
-  const [progressInput, setProgressInput] = useState("");
-  const [progressError, setProgressError] = useState<string | null>(null);
+  const [updatedValueInput, setUpdatedValueInput] = useState("");
+  const [targetValueInput, setTargetValueInput] = useState("");
+  const [metricInput, setMetricInput] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
 
   const closeProgressModal = () => {
     setActiveKeyResult(null);
-    setProgressInput("");
-    setProgressError(null);
+    setUpdatedValueInput("");
+    setTargetValueInput("");
+    setMetricInput("");
+    setEditError(null);
   };
 
   const openProgressModal = (objectiveId: number, keyResult: KeyResult) => {
     setActiveKeyResult({ objectiveId, keyResult });
-    setProgressInput(String(keyResult.progress ?? 0));
-    setProgressError(null);
+    setUpdatedValueInput(String(keyResult.updatedValue ?? 0));
+    setTargetValueInput(String(keyResult.targetValue ?? 0));
+    setMetricInput(keyResult.metric ?? "");
+    setEditError(null);
   };
 
   const saveProgress = () => {
     if (!activeKeyResult) return;
-    const nextProgress = Number(progressInput);
-    if (Number.isNaN(nextProgress)) {
-      setProgressError("Please enter a valid progress value.");
+    const nextUpdatedValue = Number(updatedValueInput);
+    const nextTargetValue = Number(targetValueInput);
+    const nextMetric = metricInput.trim();
+
+    if (!nextMetric) {
+      setEditError("Please enter a metric.");
       return;
     }
-    if (nextProgress < 0 || nextProgress > 100) {
-      setProgressError("Progress should be in the range 0-100.");
+    if (Number.isNaN(nextUpdatedValue)) {
+      setEditError("Please enter a valid updated value.");
+      return;
+    }
+    if (Number.isNaN(nextTargetValue)) {
+      setEditError("Please enter a valid target value.");
+      return;
+    }
+    if (nextUpdatedValue < 0) {
+      setEditError("Updated value cannot be negative.");
+      return;
+    }
+    if (nextTargetValue <= 0) {
+      setEditError("Target value should be greater than 0.");
       return;
     }
 
@@ -139,26 +165,58 @@ const OkrList = ({
       activeKeyResult.objectiveId,
       activeKeyResult.keyResult.id,
       {
-        progress: nextProgress,
+        updatedValue: nextUpdatedValue,
+        targetValue: nextTargetValue,
+        metric: nextMetric,
       },
     );
-    setProgressError(null);
+    setEditError(null);
     closeProgressModal();
   };
+
+  const getProgress = (updatedValue: number, targetValue: number) => {
+    if (!Number.isFinite(updatedValue) || !Number.isFinite(targetValue)) {
+      return 0;
+    }
+    if (targetValue <= 0) return 0;
+    return Math.round((updatedValue / targetValue) * 100);
+  };
+
+  const isKeyResultComplete = (keyResult: KeyResult) =>
+    Boolean(keyResult.isCompleted) ||
+    getProgress(keyResult.updatedValue, keyResult.targetValue) >= 100;
 
   return (
     <>
       <div className="space-y-4">
-        {okr?.map((objective: OKR) => (
-          <div
-            key={objective.id}
-            className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60"
-          >
+        {okr?.map((objective: OKR) => {
+          const keyResults = objective.keyResults ?? [];
+          const completedCount = keyResults.filter(isKeyResultComplete).length;
+          const objectiveComplete =
+            keyResults.length > 0 && completedCount === keyResults.length;
+
+          return (
+            <div
+              key={objective.id}
+              className={`overflow-hidden rounded-3xl border bg-white/60 ${
+                objectiveComplete ? "border-emerald-300" : "border-[#c7c7cc]"
+              }`}
+            >
             <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
-              <h2 className="text-lg font-semibold text-zinc-900">
-                {objective.title}
-              </h2>
               <div className="flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-zinc-900">
+                  {objective.title}
+                </h2>
+                {objectiveComplete ? (
+                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                    Completed
+                  </span>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="rounded-full border border-[#e5e5ea] bg-white px-3 py-1 text-xs font-semibold text-zinc-600">
+                  {completedCount}/{keyResults.length} done
+                </span>
                 <Modal triggerLabel="Edit" title="Edit OKR">
                   {({ close }) => (
                     <ObjectiveEditForm
@@ -178,15 +236,21 @@ const OkrList = ({
               </div>
             </div>
             <ul className="divide-y divide-[#e5e5ea]">
-              {objective.keyResults?.map((keyResult: KeyResult, index) => {
+              {keyResults.map((keyResult: KeyResult, index) => {
                 const checkboxId = `kr-${objective.id}-${keyResult.id}`;
-                const progressText =
-                  typeof keyResult.progress === "number"
-                    ? `${keyResult.progress}%`
-                    : keyResult.progress;
+                const progressValue = getProgress(
+                  keyResult.updatedValue,
+                  keyResult.targetValue,
+                );
+                const progressText = `${progressValue}%`;
+                const valueText = `${keyResult.updatedValue}/${keyResult.targetValue} ${keyResult.metric}`;
+                const keyResultComplete = isKeyResultComplete(keyResult);
                 let bg_color = "bg-white";
                 if (index % 2) {
                   bg_color = "bg-pink-100";
+                }
+                if (keyResultComplete) {
+                  bg_color = "bg-emerald-50";
                 }
                 return (
                   <li
@@ -213,10 +277,19 @@ const OkrList = ({
                           openProgressModal(objective.id, keyResult)
                         }
                         className="min-w-0 flex-1 text-left"
-                        aria-label={`Edit progress for ${keyResult.description}`}
+                        aria-label={`Edit values for ${keyResult.description}`}
                       >
-                        <span className="truncate text-base font-medium text-zinc-900 hover:text-[#007AFF]">
+                        <span
+                          className={`truncate text-base font-medium hover:text-[#007AFF] ${
+                            keyResultComplete
+                              ? "text-emerald-700 line-through"
+                              : "text-zinc-900"
+                          }`}
+                        >
                           {keyResult.description}
+                        </span>
+                        <span className="truncate text-sm text-zinc-500">
+                          {valueText}
                         </span>
                       </button>
                     </div>
@@ -226,11 +299,20 @@ const OkrList = ({
                         onClick={() =>
                           openProgressModal(objective.id, keyResult)
                         }
-                        className="rounded-2xl border border-[#e5e5ea] bg-white px-3 py-1.5 text-base font-semibold text-zinc-700 hover:bg-[#f2f2f7]"
-                        aria-label={`Progress ${progressText}. Click to edit.`}
+                        className={`rounded-2xl border px-3 py-1.5 text-base font-semibold hover:bg-[#f2f2f7] ${
+                          keyResultComplete
+                            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                            : "border-[#e5e5ea] bg-white text-zinc-700"
+                        }`}
+                        aria-label={`Progress ${progressText}. Click to edit values.`}
                       >
                         {progressText}
                       </button>
+                      {keyResultComplete ? (
+                        <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700">
+                          Done
+                        </span>
+                      ) : null}
                       <button
                         type="button"
                         onClick={() =>
@@ -246,13 +328,14 @@ const OkrList = ({
               })}
             </ul>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       <Modal
         isOpen={Boolean(activeKeyResult)}
         hideTrigger
-        title="Update Progress"
+        title="Update Key Result"
         onOpenChange={(open) => {
           if (!open) closeProgressModal();
         }}
@@ -267,24 +350,51 @@ const OkrList = ({
           <div className="text-base font-semibold text-zinc-900">
             {activeKeyResult?.keyResult.description}
           </div>
-          {progressError ? (
+          {editError ? (
             <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
-              {progressError}
+              {editError}
             </div>
           ) : null}
           <div className="flex flex-col gap-2">
-            <label htmlFor="progress-edit" className="text-lg font-semibold">
-              Progress
+            <label htmlFor="metric-edit" className="text-lg font-semibold">
+              Metric
             </label>
             <input
-              id="progress-edit"
+              id="metric-edit"
+              type="text"
+              value={metricInput}
+              onChange={(event) => setMetricInput(event.target.value)}
+              placeholder="Metric"
+              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="updated-value-edit" className="text-lg font-semibold">
+              Updated Value
+            </label>
+            <input
+              id="updated-value-edit"
               type="number"
               min={0}
-              max={100}
-              inputMode="numeric"
-              value={progressInput}
-              onChange={(event) => setProgressInput(event.target.value)}
-              placeholder="Progress"
+              inputMode="decimal"
+              value={updatedValueInput}
+              onChange={(event) => setUpdatedValueInput(event.target.value)}
+              placeholder="Updated value"
+              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="target-value-edit" className="text-lg font-semibold">
+              Target Value
+            </label>
+            <input
+              id="target-value-edit"
+              type="number"
+              min={1}
+              inputMode="decimal"
+              value={targetValueInput}
+              onChange={(event) => setTargetValueInput(event.target.value)}
+              placeholder="Target value"
               className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
             />
           </div>

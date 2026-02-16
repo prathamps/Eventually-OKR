@@ -23,14 +23,19 @@ describe('ObjectivesService', () => {
     objectivesService = module.get<ObjectivesService>(ObjectivesService);
   });
 
-  const getMockObjective = (progress: number[]) => {
+  const getMockObjective = (
+    values: Array<{ updatedValue: number; targetValue: number }>,
+  ) => {
     return {
       id: 1,
       title: 'Objective 1',
-      keyResults: progress.map((key, index) => ({
+      keyResults: values.map((key, index) => ({
         id: index,
         description: '',
-        progress: key,
+        metric: 'units',
+        updatedValue: key.updatedValue,
+        targetValue: key.targetValue,
+        isCompleted: false,
         objectiveId: 1,
       })),
     };
@@ -45,17 +50,26 @@ describe('ObjectivesService', () => {
       },
       {
         title: 'all key results completed',
-        objective: getMockObjective([100, 100]),
+        objective: getMockObjective([
+          { updatedValue: 10, targetValue: 10 },
+          { updatedValue: 20, targetValue: 20 },
+        ]),
         expected: { isComplete: true, progress: 100 },
       },
       {
         title: 'one key result incomplete',
-        objective: getMockObjective([100, 23]),
+        objective: getMockObjective([
+          { updatedValue: 10, targetValue: 10 },
+          { updatedValue: 23, targetValue: 100 },
+        ]),
         expected: { isComplete: false, progress: 62 },
       },
       {
         title: 'all key results incomplete',
-        objective: getMockObjective([0, 50]),
+        objective: getMockObjective([
+          { updatedValue: 0, targetValue: 100 },
+          { updatedValue: 50, targetValue: 100 },
+        ]),
         expected: { isComplete: false, progress: 25 },
       },
     ])(

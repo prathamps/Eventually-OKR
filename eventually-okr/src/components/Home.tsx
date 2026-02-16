@@ -141,7 +141,12 @@ const Home = () => {
   async function updateKeyResult(
     objectiveId: number,
     keyResultId: number,
-    updates: { progress?: number; isCompleted?: boolean },
+    updates: {
+      updatedValue?: number;
+      targetValue?: number;
+      metric?: string;
+      isCompleted?: boolean;
+    },
   ) {
     setOkrList((prev) =>
       prev.map((o) =>

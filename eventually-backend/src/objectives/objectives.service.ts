@@ -78,15 +78,26 @@ export class ObjectivesService {
       return { isComplete: true, progress: 0 };
     }
 
-    const totalProgress = keyResults.reduce(
-      (sum, keyResult) => sum + keyResult.progress,
-      0,
+    const progressValues = keyResults.map((keyResult) =>
+      this.calculateProgress(keyResult.updatedValue, keyResult.targetValue),
     );
+    const totalProgress = progressValues.reduce((sum, value) => sum + value, 0);
     const progress = Math.round(totalProgress / keyResults.length);
     const isComplete = keyResults.every(
-      (keyResult) => keyResult.progress === 100,
+      (keyResult) =>
+        keyResult.isCompleted ||
+        this.calculateProgress(keyResult.updatedValue, keyResult.targetValue) >=
+          100,
     );
 
     return { isComplete, progress };
+  }
+
+  private calculateProgress(updatedValue: number, targetValue: number) {
+    if (!Number.isFinite(updatedValue) || !Number.isFinite(targetValue)) {
+      return 0;
+    }
+    if (targetValue <= 0) return 0;
+    return (updatedValue / targetValue) * 100;
   }
 }

@@ -49,7 +49,10 @@ export class ObjectivesController {
     type: Number,
     description: 'Objective id.',
   })
-  @ApiOkResponse({ description: 'Objective found.', type: ObjectiveResponseDto })
+  @ApiOkResponse({
+    description: 'Objective found.',
+    type: ObjectiveResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Objective not found.' })
   getById(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
     return this.objectivesService.getById(objectiveId);
@@ -72,7 +75,9 @@ export class ObjectivesController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create an objective (optionally with key results).' })
+  @ApiOperation({
+    summary: 'Create an objective (optionally with key results).',
+  })
   @ApiCreatedResponse({
     description: 'Objective created.',
     type: ObjectiveWithKeyResultsResponseDto,
@@ -89,7 +94,10 @@ export class ObjectivesController {
     type: Number,
     description: 'Objective id.',
   })
-  @ApiOkResponse({ description: 'Objective updated.', type: ObjectiveResponseDto })
+  @ApiOkResponse({
+    description: 'Objective updated.',
+    type: ObjectiveResponseDto,
+  })
   @ApiBadRequestResponse({ description: 'Validation error.' })
   @ApiNotFoundResponse({ description: 'Objective not found.' })
   update(
@@ -106,7 +114,10 @@ export class ObjectivesController {
     type: Number,
     description: 'Objective id.',
   })
-  @ApiOkResponse({ description: 'Objective deleted.', type: ObjectiveResponseDto })
+  @ApiOkResponse({
+    description: 'Objective deleted.',
+    type: ObjectiveResponseDto,
+  })
   @ApiNotFoundResponse({ description: 'Objective not found.' })
   delete(@Param('objectiveId', ParseIntPipe) objectiveId: number) {
     return this.objectivesService.delete(objectiveId);

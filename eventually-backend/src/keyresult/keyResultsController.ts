@@ -20,7 +20,7 @@ import {
 import { KeyResultsService } from './key-results.service';
 import { KeyResultDto } from './dto/keyResultDto';
 import { UpdateKeyResultDto } from './dto/updateKeyResultDto';
-import { KeyResultProgressPipe } from './pipes/keyResultProgressPipe';
+import { KeyResultValuesPipe } from './pipes/keyResultValuesPipe';
 import { KeyResultResponseDto } from './dto/keyResultResponseDto';
 
 @Controller('/objective/:objectiveId/key-results')
@@ -58,7 +58,7 @@ export class KeyResultsController {
   @ApiBadRequestResponse({ description: 'Validation error.' })
   @ApiNotFoundResponse({ description: 'Objective not found.' })
   create(
-    @Body() createKeyResultDto: KeyResultDto,
+    @Body(new KeyResultValuesPipe()) createKeyResultDto: KeyResultDto,
     @Param('objectiveId', ParseIntPipe) objectiveId: number,
   ) {
     return this.keyResultsService.create(createKeyResultDto, objectiveId);
@@ -81,11 +81,11 @@ export class KeyResultsController {
     type: KeyResultResponseDto,
   })
   @ApiBadRequestResponse({
-    description: 'Validation error. Progress must be between 0 and 100.',
+    description: 'Validation error. Invalid updated/target values.',
   })
   @ApiNotFoundResponse({ description: 'Key result not found.' })
   update(
-    @Body(new KeyResultProgressPipe())
+    @Body(new KeyResultValuesPipe())
     updateKeyResultDto: Partial<UpdateKeyResultDto>,
     @Param('keyResultId', ParseIntPipe) keyResultId: number,
   ) {

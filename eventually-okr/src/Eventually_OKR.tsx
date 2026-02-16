@@ -38,7 +38,9 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
           title: objectiveValue,
           keyResults: keyResultList.map((kr) => ({
             description: kr.description,
-            progress: Number(kr.progress),
+            updatedValue: Number(kr.updatedValue),
+            targetValue: Number(kr.targetValue),
+            metric: kr.metric,
           })),
         }),
       });

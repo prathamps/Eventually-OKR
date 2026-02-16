@@ -8,7 +8,8 @@ export class ObjectiveCompletednessDto {
   isComplete!: boolean;
 
   @ApiProperty({
-    description: 'Average progress of key results, rounded to nearest integer.',
+    description:
+      'Average progress of key results derived from updated/target values.',
     example: 68,
     minimum: 0,
     maximum: 100,

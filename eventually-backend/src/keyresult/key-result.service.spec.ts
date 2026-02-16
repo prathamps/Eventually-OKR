@@ -1,7 +1,7 @@
 import { KeyResultsService } from './key-results.service';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../../prisma.service';
-import { KeyResult } from '../../generated/prisma/client';
+import { KeyResult } from '@prisma/client';
 import { KeyResultDto } from './dto/keyResultDto';
 import { UpdateKeyResultDto } from './dto/updateKeyResultDto';
 
@@ -38,7 +38,9 @@ describe('KeyResultsService', () => {
         {
           id: 1,
           description: 'Complete the project',
-          progress: 100,
+          metric: 'tasks',
+          updatedValue: 10,
+          targetValue: 10,
           isCompleted: true,
           objectiveId: 1,
           createdAt: new Date(),
@@ -46,7 +48,9 @@ describe('KeyResultsService', () => {
         {
           id: 2,
           description: 'Complete the 2nd project ',
-          progress: 75,
+          metric: 'tasks',
+          updatedValue: 6,
+          targetValue: 10,
           isCompleted: false,
           objectiveId: 1,
           createdAt: new Date(),
@@ -70,12 +74,16 @@ describe('KeyResultsService', () => {
       const objectiveId = 2;
       const keyResultDto: KeyResultDto = {
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
       };
       const mockCreatedKeyResult: KeyResult = {
         id: 1,
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
         isCompleted: true,
         objectiveId: 2,
         createdAt: new Date(),
@@ -105,12 +113,16 @@ describe('KeyResultsService', () => {
       const keyResultId = 1;
       const keyResultDto: Partial<UpdateKeyResultDto> = {
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
       };
       const mockUpdatedKeyResult: KeyResult = {
         id: 1,
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
         isCompleted: true,
         objectiveId: 1,
         createdAt: new Date(),
@@ -140,7 +152,9 @@ describe('KeyResultsService', () => {
       const mockDeletedKeyResult: KeyResult = {
         id: 1,
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
         isCompleted: true,
         objectiveId: 1,
         createdAt: new Date(),
