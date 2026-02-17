@@ -2,6 +2,15 @@ import { useContext } from "react";
 import { KeyResultContext } from "../providers/KeyResultContext.tsx";
 export const KeyResultList = () => {
   const { keyResultList, setKeyResultList } = useContext(KeyResultContext);
+
+  const getProgress = (updatedValue: number, targetValue: number) => {
+    if (!Number.isFinite(updatedValue) || !Number.isFinite(targetValue)) {
+      return 0;
+    }
+    if (targetValue <= 0) return 0;
+    return Math.round((updatedValue / targetValue) * 100);
+  };
+
   return (
     <div className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60">
       <ol className="divide-y divide-[#e5e5ea]">
@@ -10,6 +19,11 @@ export const KeyResultList = () => {
           if (index % 2) {
             bg_color = "bg-pink-100";
           }
+          const progress = getProgress(
+            keyResult.updatedValue,
+            keyResult.targetValue,
+          );
+          const valueText = `${keyResult.updatedValue}/${keyResult.targetValue} ${keyResult.metric}`;
           return (
             <li
               key={keyResult.id}
@@ -17,10 +31,11 @@ export const KeyResultList = () => {
             >
               <div className="min-w-0 text-base font-medium text-zinc-900">
                 <div className="truncate">{keyResult.description}</div>
+                <div className="text-sm text-zinc-500 truncate">{valueText}</div>
               </div>
               <div className="flex items-center gap-3">
                 <div className="whitespace-nowrap tabular-nums text-base font-semibold text-zinc-600">
-                  {keyResult.progress}%
+                  {progress}%
                 </div>
                 <button
                   type="button"

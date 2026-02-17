@@ -2,100 +2,118 @@
   "okrs": [
     {
       "id": "1",
-      "objective": "AH",
+      "title": "Improve onboarding activation",
       "keyResults": [
         {
           "id": 1,
           "description": "Learning React fundamentals",
-          "progress": "100%"
+          "updatedValue": 100,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "2",
-      "objective": "Learn TypeScript",
+      "title": "Learn TypeScript",
       "keyResults": [
         {
           "id": 1,
           "description": "Understanding TypeScript basics",
-          "progress": "80%"
+          "updatedValue": 80,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "3",
-      "objective": "Build a Todo App",
+      "title": "Build a Todo App",
       "keyResults": [
         {
           "id": 1,
           "description": "Create CRUD functionality",
-          "progress": "70%"
+          "updatedValue": 70,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "5",
-      "objective": "Master Git",
+      "title": "Master Git",
       "keyResults": [
         {
           "id": 1,
           "description": "Practice branching and rebasing",
-          "progress": "75%"
+          "updatedValue": 75,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "6",
-      "objective": "Learn MongoDB",
+      "title": "Learn MongoDB",
       "keyResults": [
         {
           "id": 1,
           "description": "Work with CRUD and aggregation",
-          "progress": "65%"
+          "updatedValue": 65,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "7",
-      "objective": "Prepare for Interviews",
+      "title": "Prepare for Interviews",
       "keyResults": [
         {
           "id": 1,
           "description": "Solve DSA problems daily",
-          "progress": "50%"
+          "updatedValue": 50,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "8",
-      "objective": "Build a Portfolio",
+      "title": "Build a Portfolio",
       "keyResults": [
         {
           "id": 1,
           "description": "Add 3 solid projects",
-          "progress": "40%"
+          "updatedValue": 40,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "9",
-      "objective": "Learn System Design",
+      "title": "Learn System Design",
       "keyResults": [
         {
           "id": 1,
           "description": "Understand scalability concepts",
-          "progress": "30%"
+          "updatedValue": 30,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     },
     {
       "id": "10",
-      "objective": "Improve Communication Skills",
+      "title": "Improve Communication Skills",
       "keyResults": [
         {
           "id": 1,
           "description": "Practice explaining technical concepts",
-          "progress": "55%"
+          "updatedValue": 55,
+          "targetValue": 100,
+          "metric": "%"
         }
       ]
     }

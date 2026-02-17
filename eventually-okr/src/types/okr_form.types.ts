@@ -1,7 +1,9 @@
 export type KeyResult = {
   id: number;
   description: string;
-  progress: number;
+  updatedValue: number;
+  targetValue: number;
+  metric: string;
   isCompleted?: boolean;
 };
 

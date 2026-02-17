@@ -10,14 +10,21 @@ export const KeyResultProvider = ({
 
   function sendKeyResult(keyResult: KeyResult) {
     const description = keyResult.description?.trim();
-    const progressRaw = String(keyResult.progress ?? "").trim();
-    const progress = Number(progressRaw);
+    const metric = keyResult.metric?.trim();
+    const updatedValueRaw = String(keyResult.updatedValue ?? "").trim();
+    const targetValueRaw = String(keyResult.targetValue ?? "").trim();
+    const updatedValue = Number(updatedValueRaw);
+    const targetValue = Number(targetValueRaw);
 
     if (!description) throw new Error("Please enter a key result description.");
-    if (progressRaw === "" || Number.isNaN(progress))
-      throw new Error("Please enter a valid progress value.");
-    if (progress < 0 || progress > 100)
-      throw new Error("Progress should be in the range 0-100.");
+    if (!metric) throw new Error("Please enter a metric.");
+    if (updatedValueRaw === "" || Number.isNaN(updatedValue))
+      throw new Error("Please enter a valid updated value.");
+    if (targetValueRaw === "" || Number.isNaN(targetValue))
+      throw new Error("Please enter a valid target value.");
+    if (updatedValue < 0) throw new Error("Updated value cannot be negative.");
+    if (targetValue <= 0)
+      throw new Error("Target value should be greater than 0.");
 
     setKeyResultList((prev) => [...prev, keyResult]);
   }

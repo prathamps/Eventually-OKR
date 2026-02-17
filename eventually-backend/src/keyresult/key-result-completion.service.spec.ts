@@ -13,19 +13,23 @@ describe('KeyResultCompletionService', () => {
   });
 
   describe('isCompleted', () => {
-    it('should return true when progress is 100', () => {
+    it('should return true when updated value meets target', () => {
       const keyResultDto = {
         description: 'Complete the project',
-        progress: 100,
+        metric: 'tasks',
+        updatedValue: 10,
+        targetValue: 10,
       };
       const result = keyResultCompletionService.isCompleted(keyResultDto);
       expect(result).toBeTruthy();
     });
 
-    it('should return false when progress is less than 100', () => {
+    it('should return false when updated value is below target', () => {
       const keyResultDto = {
         description: 'Complete the project',
-        progress: 75,
+        metric: 'tasks',
+        updatedValue: 7,
+        targetValue: 10,
       };
       const result = keyResultCompletionService.isCompleted(keyResultDto);
       expect(result).toBeFalsy();
