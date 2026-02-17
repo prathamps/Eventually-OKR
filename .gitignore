@@ -14,7 +14,7 @@
 
 # Environment files
 **/.env
-**/.env.*
+
 
 # Prisma / local databases
 **/*.db
