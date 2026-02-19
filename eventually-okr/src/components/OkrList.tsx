@@ -243,7 +243,6 @@ const OkrList = ({
 							</div>
 							<ul className="divide-y divide-slate-200">
 								{keyResults.map((keyResult: KeyResult, index) => {
-									const checkboxId = `kr-${objective.id}-${keyResult.id}`
 									const progressValue = getProgress(
 										keyResult.updatedValue,
 										keyResult.targetValue,
@@ -264,19 +263,6 @@ const OkrList = ({
 											className={`flex flex-col gap-3 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between ${bg_color}`}
 										>
 											<div className="min-w-0 flex items-start gap-3 sm:items-center">
-												<input
-													id={checkboxId}
-													type="checkbox"
-													name={checkboxId}
-													checked={Boolean(keyResult.isCompleted)}
-													onChange={(e) =>
-														onUpdateKeyResult(objective.id, keyResult.id, {
-															isCompleted: e.target.checked,
-														})
-													}
-													aria-label={`Mark ${keyResult.description} complete`}
-													className="h-4 w-4 accent-[#007AFF]"
-												/>
 												<button
 													type="button"
 													onClick={() =>
@@ -294,7 +280,7 @@ const OkrList = ({
 													>
 														{keyResult.description}
 													</span>
-													<span className="truncate text-sm text-zinc-500">
+													<span className="truncate text-sm text-zinc-500 ml-2">
 														{valueText}
 													</span>
 												</button>

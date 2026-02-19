@@ -73,22 +73,22 @@ const ChatBot = ({ apiBase, onClose }: ChatBotProps) => {
   };
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="glass-card flex h-full flex-col bg-slate-50/80">
       <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
         <div>
-          <div className="text-sm font-semibold text-slate-900">OKR Assistant</div>
+          <div className="text-sm font-semibold text-zinc-900">OKR Assistant</div>
           <div className="text-xs text-slate-500">Ask about objectives and key results</div>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100"
+          className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-700 hover:bg-slate-100"
         >
           Close
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div className="flex-1 space-y-3 overflow-y-auto bg-gradient-to-b from-slate-50/60 to-white/50 p-4">
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -97,10 +97,10 @@ const ChatBot = ({ apiBase, onClose }: ChatBotProps) => {
             }`}
           >
             <div
-              className={`px-4 py-2 rounded-lg max-w-[70%] text-sm ${
+              className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm shadow-sm ${
                 msg.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
+                  ? "border border-teal-300 bg-teal-600 text-white"
+                  : "border border-slate-200 bg-white text-zinc-800"
               }`}
             >
               {msg.content}
@@ -109,25 +109,25 @@ const ChatBot = ({ apiBase, onClose }: ChatBotProps) => {
         ))}
 
         {loading && (
-          <div className="text-gray-400 text-sm">Typing...</div>
+          <div className="text-sm text-slate-400">Typing...</div>
         )}
 
         <div ref={bottomRef} />
       </div>
 
-      <div className="p-3 border-t flex gap-2">
+      <div className="flex gap-2 border-t border-slate-200 bg-white/80 p-3">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Ask about your OKRs..."
-          className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
         />
         <button
           onClick={sendMessage}
           disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 disabled:opacity-50"
+          className="rounded-full border border-teal-300 bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Send
         </button>

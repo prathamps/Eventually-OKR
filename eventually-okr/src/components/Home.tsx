@@ -394,15 +394,46 @@ const Home = () => {
 					</div>
 				)}
 			</Modal>
-			<div className="fixed bottom-6 right-6 z-40">
-				<button
-					type="button"
-					onClick={() => setIsChatOpen((prev) => !prev)}
-					className="rounded-full bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-800"
-				>
-					{isChatOpen ? "Close Assistant" : "Ask Assistant"}
-				</button>
-			</div>
+				<div className="fixed bottom-6 right-6 z-40">
+					<button
+						type="button"
+						onClick={() => setIsChatOpen((prev) => !prev)}
+						aria-label={isChatOpen ? "Close assistant" : "Open assistant"}
+						title={isChatOpen ? "Close assistant" : "Open assistant"}
+						className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg transition hover:bg-slate-800"
+					>
+						{isChatOpen ? (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-5 w-5"
+								aria-hidden="true"
+							>
+								<path d="M18 6 6 18" />
+								<path d="m6 6 12 12" />
+							</svg>
+						) : (
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								className="h-5 w-5"
+								aria-hidden="true"
+							>
+								<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+							</svg>
+						)}
+					</button>
+				</div>
 
 			{isChatOpen ? (
 				<>

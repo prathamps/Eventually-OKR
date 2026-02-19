@@ -31,7 +31,7 @@ export const KeyResultList = () => {
 						>
 							<div className="min-w-0 text-base font-medium text-zinc-900">
 								<div className="truncate">{keyResult.description}</div>
-								<div className="text-sm text-zinc-500 truncate">
+								<div className="text-sm text-zinc-500 truncate ml-1.5">
 									{valueText}
 								</div>
 							</div>
