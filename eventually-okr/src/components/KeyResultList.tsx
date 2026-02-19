@@ -12,12 +12,12 @@ export const KeyResultList = () => {
   };
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-[#c7c7cc] bg-white/60">
+    <div className="glass-card overflow-hidden rounded-3xl">
       <ol className="divide-y divide-[#e5e5ea]">
         {keyResultList?.map((keyResult, index) => {
-          let bg_color = "bg-white";
+          let bg_color = "bg-white/85";
           if (index % 2) {
-            bg_color = "bg-pink-100";
+            bg_color = "bg-amber-50/85";
           }
           const progress = getProgress(
             keyResult.updatedValue,
@@ -27,19 +27,19 @@ export const KeyResultList = () => {
           return (
             <li
               key={keyResult.id}
-              className={`flex items-center justify-between gap-4 px-5 py-4 ${bg_color}`}
+              className={`flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 ${bg_color}`}
             >
               <div className="min-w-0 text-base font-medium text-zinc-900">
                 <div className="truncate">{keyResult.description}</div>
                 <div className="text-sm text-zinc-500 truncate">{valueText}</div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between gap-3 sm:justify-end">
                 <div className="whitespace-nowrap tabular-nums text-base font-semibold text-zinc-600">
                   {progress}%
                 </div>
                 <button
                   type="button"
-                  className="rounded-full border border-[#e5e5ea] px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+                  className="rounded-full border border-rose-200 bg-white px-3 py-1.5 text-sm font-semibold text-rose-700 cursor-pointer hover:bg-rose-50"
                   onClick={() =>
                     setKeyResultList(
                       keyResultList.filter((kr) => kr.id !== keyResult.id),

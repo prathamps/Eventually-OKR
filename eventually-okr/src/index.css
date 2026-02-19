@@ -1,28 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 :root {
   color-scheme: light;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    "Apple Color Emoji",
-    "Segoe UI Emoji";
+  --bg-1: #fff9f2;
+  --bg-2: #fff1ec;
+  --bg-3: #fefcff;
+  --panel: rgba(255, 255, 255, 0.78);
+  --panel-border: rgba(23, 23, 23, 0.1);
+  --text-primary: #1f2937;
+  --text-secondary: #475569;
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --danger: #dc2626;
+  --headline-font: "Space Grotesk", "Segoe UI", sans-serif;
+  --body-font: "IBM Plex Sans", "Segoe UI", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   min-height: 100dvh;
   margin: 0;
-  background-color: #f2f2f7;
+  font-family: var(--body-font);
+  background:
+    radial-gradient(circle at 10% 20%, var(--bg-1) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, #ffe7d8 0%, transparent 40%),
+    linear-gradient(160deg, var(--bg-3) 0%, var(--bg-2) 100%);
+  color: var(--text-primary);
 }
 
 #root {
   min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--headline-font);
+  letter-spacing: -0.02em;
+}
+
+.glass-card {
+  border: 1px solid var(--panel-border);
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 20px 40px -30px rgba(2, 6, 23, 0.35),
+    0 8px 16px -12px rgba(2, 6, 23, 0.2);
+}
+
+.enter-up {
+  animation: enter-up 420ms ease-out both;
+}
+
+.stagger-1 {
+  animation-delay: 80ms;
+}
+
+.stagger-2 {
+  animation-delay: 140ms;
+}
+
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

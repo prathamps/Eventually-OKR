@@ -60,10 +60,10 @@ const ObjectiveEditForm = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5"
+      className="glass-card flex flex-col gap-4 rounded-3xl p-5"
     >
       {formError ? (
-        <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50/85 px-4 py-3 text-sm text-rose-700">
           {formError}
         </div>
       ) : null}
@@ -81,7 +81,7 @@ const ObjectiveEditForm = ({
           name="objective"
           value={draftTitle}
           onChange={(e) => setDraftTitle(e.target.value)}
-          className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+          className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
           required
         />
       </div>
@@ -89,13 +89,13 @@ const ObjectiveEditForm = ({
         <button
           type="button"
           onClick={onClose}
-          className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-slate-100"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
+          className="rounded-full border border-teal-300 bg-teal-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer hover:bg-teal-700"
         >
           Save
         </button>
@@ -160,6 +160,10 @@ const OkrList = ({
       setEditError("Target value should be greater than 0.");
       return;
     }
+    if (nextUpdatedValue > nextTargetValue) {
+      setEditError("Updated value cannot be greater than target value.");
+      return;
+    }
 
     onUpdateKeyResult(
       activeKeyResult.objectiveId,
@@ -198,11 +202,11 @@ const OkrList = ({
           return (
             <div
               key={objective.id}
-              className={`overflow-hidden rounded-3xl border bg-white/60 ${
-                objectiveComplete ? "border-emerald-300" : "border-[#c7c7cc]"
+              className={`glass-card overflow-hidden rounded-3xl border ${
+                objectiveComplete ? "border-emerald-300" : "border-slate-200"
               }`}
             >
-            <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
+            <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold text-zinc-900">
                   {objective.title}
@@ -213,11 +217,16 @@ const OkrList = ({
                   </span>
                 ) : null}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="rounded-full border border-[#e5e5ea] bg-white px-3 py-1 text-xs font-semibold text-zinc-600">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-600">
                   {completedCount}/{keyResults.length} done
                 </span>
-                <Modal triggerLabel="Edit" title="Edit OKR">
+                <Modal
+                  triggerLabel="Edit"
+                  title="Edit OKR"
+                  triggerVariant="secondary"
+                  size="sm"
+                >
                   {({ close }) => (
                     <ObjectiveEditForm
                       objective={objective}
@@ -229,13 +238,13 @@ const OkrList = ({
                 <button
                   type="button"
                   onClick={() => onDeleteObjective(objective.id)}
-                  className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+                  className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 cursor-pointer hover:bg-rose-50"
                 >
                   Delete
                 </button>
               </div>
             </div>
-            <ul className="divide-y divide-[#e5e5ea]">
+            <ul className="divide-y divide-slate-200">
               {keyResults.map((keyResult: KeyResult, index) => {
                 const checkboxId = `kr-${objective.id}-${keyResult.id}`;
                 const progressValue = getProgress(
@@ -245,19 +254,19 @@ const OkrList = ({
                 const progressText = `${progressValue}%`;
                 const valueText = `${keyResult.updatedValue}/${keyResult.targetValue} ${keyResult.metric}`;
                 const keyResultComplete = isKeyResultComplete(keyResult);
-                let bg_color = "bg-white";
+                let bg_color = "bg-white/85";
                 if (index % 2) {
-                  bg_color = "bg-pink-100";
+                  bg_color = "bg-amber-50/70";
                 }
                 if (keyResultComplete) {
-                  bg_color = "bg-emerald-50";
+                  bg_color = "bg-emerald-50/85";
                 }
                 return (
                   <li
                     key={keyResult.id}
-                    className={`flex items-center justify-between gap-4 px-5 py-4 ${bg_color}`}
+                    className={`flex flex-col gap-3 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between ${bg_color}`}
                   >
-                    <div className="min-w-0 flex items-center gap-3">
+                    <div className="min-w-0 flex items-start gap-3 sm:items-center">
                       <input
                         id={checkboxId}
                         type="checkbox"
@@ -293,7 +302,7 @@ const OkrList = ({
                         </span>
                       </button>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                       <button
                         type="button"
                         onClick={() =>
@@ -302,7 +311,7 @@ const OkrList = ({
                         className={`rounded-2xl border px-3 py-1.5 text-base font-semibold hover:bg-[#f2f2f7] ${
                           keyResultComplete
                             ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                            : "border-[#e5e5ea] bg-white text-zinc-700"
+                            : "border-slate-200 bg-white text-zinc-700"
                         }`}
                         aria-label={`Progress ${progressText}. Click to edit values.`}
                       >
@@ -318,7 +327,7 @@ const OkrList = ({
                         onClick={() =>
                           onDeleteKeyResult(objective.id, keyResult.id)
                         }
-                        className="rounded-full border border-[#e5e5ea] px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+                        className="rounded-full border border-rose-200 bg-white px-3 py-1.5 text-sm font-semibold text-rose-700 cursor-pointer hover:bg-rose-50"
                       >
                         Delete
                       </button>
@@ -336,12 +345,13 @@ const OkrList = ({
         isOpen={Boolean(activeKeyResult)}
         hideTrigger
         title="Update Key Result"
+        size="md"
         onOpenChange={(open) => {
           if (!open) closeProgressModal();
         }}
       >
         <form
-          className="flex flex-col gap-4 rounded-3xl border border-[#c7c7cc] bg-white/60 p-5"
+          className="glass-card flex flex-col gap-4 rounded-3xl p-5"
           onSubmit={(event) => {
             event.preventDefault();
             saveProgress();
@@ -351,7 +361,7 @@ const OkrList = ({
             {activeKeyResult?.keyResult.description}
           </div>
           {editError ? (
-            <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50/85 px-4 py-3 text-sm text-rose-700">
               {editError}
             </div>
           ) : null}
@@ -365,7 +375,7 @@ const OkrList = ({
               value={metricInput}
               onChange={(event) => setMetricInput(event.target.value)}
               placeholder="Metric"
-              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -380,7 +390,7 @@ const OkrList = ({
               value={updatedValueInput}
               onChange={(event) => setUpdatedValueInput(event.target.value)}
               placeholder="Updated value"
-              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
             />
           </div>
           <div className="flex flex-col gap-2">
@@ -395,20 +405,20 @@ const OkrList = ({
               value={targetValueInput}
               onChange={(event) => setTargetValueInput(event.target.value)}
               placeholder="Target value"
-              className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+              className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
             />
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               onClick={closeProgressModal}
-              className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-[#f2f2f7]"
+              className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-600 cursor-pointer hover:bg-slate-100 sm:w-auto"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-full border border-[#e5e5ea] px-4 py-2 text-sm font-semibold text-[#007AFF] cursor-pointer hover:bg-[#f2f2f7]"
+              className="w-full rounded-full border border-teal-300 bg-teal-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer hover:bg-teal-700 sm:w-auto"
             >
               Save
             </button>
