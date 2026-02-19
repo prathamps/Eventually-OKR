@@ -211,9 +211,7 @@ const Home = () => {
 		await performDeleteKeyResult(confirm.objectiveId, confirm.keyResultId)
 	}
 
-	async function generateObjective(
-		close: () => void,
-	): Promise<void> {
+	async function generateObjective(close: () => void): Promise<void> {
 		const prompt = generatePrompt.trim()
 		if (!prompt) {
 			setNotice("Please enter a prompt to generate an OKR.")
@@ -261,10 +259,10 @@ const Home = () => {
 				<div className="glass-card enter-up rounded-3xl p-5 sm:p-7">
 					<div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
 						<div>
-							<div className="inline-flex items-center rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-teal-700">
+							<div className="inline-flex items-center rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-2xl font-semibold uppercase tracking-wide text-teal-700">
 								Eventually OKR
 							</div>
-							<h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+							<h1 className="mt-3 text-md font-bold tracking-tight text-slate-900 sm:text-md">
 								Build momentum, not just lists.
 							</h1>
 							<div className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base">
@@ -274,10 +272,19 @@ const Home = () => {
 						</div>
 						<div className="w-full sm:w-auto">
 							<div className="flex flex-col gap-2 sm:flex-row">
-								<Modal triggerLabel="Add OKR" triggerVariant="primary" size="xl">
+								<Modal
+									triggerLabel="Add OKR"
+									triggerVariant="primary"
+									size="xl"
+								>
 									<EventuallyOkr setOkrList={setOkrList} apiBase={API_BASE} />
 								</Modal>
-								<Modal triggerLabel="Generate OKR" triggerVariant="secondary" size="md" title="Generate OKR">
+								<Modal
+									triggerLabel="Generate OKR"
+									triggerVariant="secondary"
+									size="md"
+									title="Generate OKR"
+								>
 									{({ close }) => (
 										<form
 											onSubmit={(event) => {
@@ -287,11 +294,14 @@ const Home = () => {
 											className="glass-card flex flex-col gap-4 rounded-3xl p-5"
 										>
 											<div className="text-sm text-slate-600">
-												Describe the objective in natural language. The backend will generate key results and create it.
+												Describe the objective in natural language. The backend
+												will generate key results and create it.
 											</div>
 											<textarea
 												value={generatePrompt}
-												onChange={(event) => setGeneratePrompt(event.target.value)}
+												onChange={(event) =>
+													setGeneratePrompt(event.target.value)
+												}
 												placeholder="Example: Increase trial-to-paid conversion to 20% by improving onboarding and reducing drop-offs."
 												className="min-h-32 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
 											/>
@@ -394,46 +404,46 @@ const Home = () => {
 					</div>
 				)}
 			</Modal>
-				<div className="fixed bottom-6 right-6 z-40">
-					<button
-						type="button"
-						onClick={() => setIsChatOpen((prev) => !prev)}
-						aria-label={isChatOpen ? "Close assistant" : "Open assistant"}
-						title={isChatOpen ? "Close assistant" : "Open assistant"}
-						className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg transition hover:bg-slate-800"
-					>
-						{isChatOpen ? (
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								className="h-5 w-5"
-								aria-hidden="true"
-							>
-								<path d="M18 6 6 18" />
-								<path d="m6 6 12 12" />
-							</svg>
-						) : (
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								className="h-5 w-5"
-								aria-hidden="true"
-							>
-								<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-							</svg>
-						)}
-					</button>
-				</div>
+			<div className="fixed bottom-6 right-6 z-40">
+				<button
+					type="button"
+					onClick={() => setIsChatOpen((prev) => !prev)}
+					aria-label={isChatOpen ? "Close assistant" : "Open assistant"}
+					title={isChatOpen ? "Close assistant" : "Open assistant"}
+					className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-900 text-white shadow-lg transition hover:bg-slate-800"
+				>
+					{isChatOpen ? (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="h-5 w-5"
+							aria-hidden="true"
+						>
+							<path d="M18 6 6 18" />
+							<path d="m6 6 12 12" />
+						</svg>
+					) : (
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							className="h-5 w-5"
+							aria-hidden="true"
+						>
+							<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+						</svg>
+					)}
+				</button>
+			</div>
 
 			{isChatOpen ? (
 				<>

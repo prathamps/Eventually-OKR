@@ -1,7 +1,7 @@
 import { execSync } from 'node:child_process';
 import { setTimeout as delay } from 'node:timers/promises';
 
-const POSTGRES_IMAGE = 'postgres:15-alpine';
+const POSTGRES_IMAGE = 'ankane/pgvector';
 const POSTGRES_DB = 'test';
 const POSTGRES_USER = 'test';
 const POSTGRES_PASSWORD = 'test';
