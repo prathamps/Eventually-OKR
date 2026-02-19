@@ -2,6 +2,7 @@ import { ObjectivesService } from './objectives.service';
 import { PrismaService } from '../../prisma.service';
 import { Test } from '@nestjs/testing';
 import { GeminiService } from '../ai/gemini.service';
+import { OkrGeneratorService } from '../ai/okr-generator.service';
 
 describe('ObjectivesService', () => {
   let objectivesService: ObjectivesService;
@@ -12,6 +13,9 @@ describe('ObjectivesService', () => {
   };
   const mockGeminiService = {
     createEmbedding: jest.fn(),
+  };
+  const mockOkrGeneratorService = {
+    generate: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -25,6 +29,10 @@ describe('ObjectivesService', () => {
         {
           provide: GeminiService,
           useValue: mockGeminiService,
+        },
+        {
+          provide: OkrGeneratorService,
+          useValue: mockOkrGeneratorService,
         },
       ],
     }).compile();

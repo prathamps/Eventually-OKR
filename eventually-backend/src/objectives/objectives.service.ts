@@ -1,16 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { KeyResult, Objective, Prisma } from '@prisma/client';
 import type { PrismaClient } from '@prisma/client';
 import { ObjectiveDto } from './dto/objectiveDto';
 import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
 import { GeminiService } from '../ai/gemini.service';
+import { OkrGeneratorService } from '../ai/okr-generator.service';
 
 @Injectable()
 export class ObjectivesService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly geminiService: GeminiService,
+    private readonly okrGeneratorService: OkrGeneratorService,
   ) {}
 
   getAll(): Promise<Objective[]> {
@@ -83,6 +85,17 @@ export class ObjectivesService {
     });
   }
 
+  async generateAndCreate(prompt: string) {
+    const trimmedPrompt = prompt.trim();
+    if (!trimmedPrompt) {
+      throw new BadRequestException('Prompt is required.');
+    }
+
+    const generated = await this.okrGeneratorService.generate(trimmedPrompt);
+    const createObjectiveDto = this.parseGeneratedObjective(generated);
+    return this.create(createObjectiveDto);
+  }
+
   checkCompletedness(keyResults: KeyResult[]) {
     if (!keyResults.length) {
       return { isComplete: true, progress: 0 };
@@ -122,5 +135,87 @@ export class ObjectivesService {
       INSERT INTO "OkrEmbedding" ("embedding", "objectiveId")
       VALUES (${`[${embedding.join(',')}]`}::vector, ${objectiveId})
     `;
+  }
+
+  private parseGeneratedObjective(generated: string): CreateObjectiveWithKeyResultsDto {
+    let parsed:
+      | {
+          title?: unknown;
+          keyResults?: Array<{
+            description?: unknown;
+            currentValue?: unknown;
+            targetValue?: unknown;
+            metricType?: unknown;
+          }>;
+        }
+      | undefined;
+
+    try {
+      parsed = JSON.parse(generated);
+    } catch {
+      throw new BadRequestException('Generated objective is not valid JSON.');
+    }
+
+    const title =
+      typeof parsed?.title === 'string' ? parsed.title.trim() : '';
+    if (!title) {
+      throw new BadRequestException('Generated objective title is invalid.');
+    }
+
+    const keyResults = Array.isArray(parsed?.keyResults) ? parsed.keyResults : [];
+    if (!keyResults.length) {
+      throw new BadRequestException('Generated objective must include key results.');
+    }
+
+    const mappedKeyResults = keyResults.map((keyResult, index) => {
+      const description =
+        typeof keyResult?.description === 'string'
+          ? keyResult.description.trim()
+          : '';
+      const updatedValue = Number(keyResult?.currentValue);
+      const targetValue = Number(keyResult?.targetValue);
+      const metric =
+        typeof keyResult?.metricType === 'string'
+          ? keyResult.metricType.trim()
+          : '';
+
+      if (!description) {
+        throw new BadRequestException(
+          `Generated key result #${index + 1} has invalid description.`,
+        );
+      }
+      if (!Number.isFinite(updatedValue) || updatedValue < 0) {
+        throw new BadRequestException(
+          `Generated key result #${index + 1} has invalid currentValue.`,
+        );
+      }
+      if (!Number.isFinite(targetValue) || targetValue <= 0) {
+        throw new BadRequestException(
+          `Generated key result #${index + 1} has invalid targetValue.`,
+        );
+      }
+      if (updatedValue > targetValue) {
+        throw new BadRequestException(
+          `Generated key result #${index + 1} currentValue exceeds targetValue.`,
+        );
+      }
+      if (!metric) {
+        throw new BadRequestException(
+          `Generated key result #${index + 1} has invalid metricType.`,
+        );
+      }
+
+      return {
+        description,
+        updatedValue,
+        targetValue,
+        metric,
+      };
+    });
+
+    return {
+      title,
+      keyResults: mappedKeyResults,
+    };
   }
 }

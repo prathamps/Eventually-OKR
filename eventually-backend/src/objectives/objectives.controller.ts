@@ -25,6 +25,7 @@ import { ObjectivesFilter } from './objectivesFilter';
 import { ObjectiveResponseDto } from './dto/objectiveResponseDto';
 import { ObjectiveWithKeyResultsResponseDto } from './dto/objectiveWithKeyResultsResponseDto';
 import { ObjectiveCompletednessDto } from './dto/objectiveCompletednessDto';
+import { GenerateObjectiveDto } from './dto/generateObjectiveDto';
 
 @UseFilters(ObjectivesFilter)
 @Controller('objectives')
@@ -85,6 +86,20 @@ export class ObjectivesController {
   @ApiBadRequestResponse({ description: 'Validation error.' })
   create(@Body() createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
     return this.objectivesService.create(createObjectiveDto);
+  }
+
+  @Post('generate')
+  @ApiOperation({
+    summary:
+      'Generate an objective with key results from a natural-language prompt and create it.',
+  })
+  @ApiCreatedResponse({
+    description: 'Generated objective created.',
+    type: ObjectiveWithKeyResultsResponseDto,
+  })
+  @ApiBadRequestResponse({ description: 'Invalid prompt or generation result.' })
+  generate(@Body() generateObjectiveDto: GenerateObjectiveDto) {
+    return this.objectivesService.generateAndCreate(generateObjectiveDto.prompt);
   }
 
   @Patch(':objectiveId')
