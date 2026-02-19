@@ -1,6 +1,7 @@
 import { ObjectivesService } from './objectives.service';
 import { PrismaService } from '../../prisma.service';
 import { Test } from '@nestjs/testing';
+import { GeminiService } from '../ai/gemini.service';
 
 describe('ObjectivesService', () => {
   let objectivesService: ObjectivesService;
@@ -8,6 +9,9 @@ describe('ObjectivesService', () => {
     objective: {
       findUniqueOrThrow: jest.fn(),
     },
+  };
+  const mockGeminiService = {
+    createEmbedding: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -17,6 +21,10 @@ describe('ObjectivesService', () => {
         {
           provide: PrismaService,
           useValue: mockPrismaService,
+        },
+        {
+          provide: GeminiService,
+          useValue: mockGeminiService,
         },
       ],
     }).compile();

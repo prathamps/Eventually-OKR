@@ -4,10 +4,14 @@ import { KeyResult, Objective, Prisma } from '@prisma/client';
 import type { PrismaClient } from '@prisma/client';
 import { ObjectiveDto } from './dto/objectiveDto';
 import { CreateObjectiveWithKeyResultsDto } from './dto/createObjectiveWithKeyResultsDto';
+import { GeminiService } from '../ai/gemini.service';
 
 @Injectable()
 export class ObjectivesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly geminiService: GeminiService,
+  ) {}
 
   getAll(): Promise<Objective[]> {
     return this.prismaService.objective.findMany({
@@ -25,8 +29,8 @@ export class ObjectivesService {
     });
   }
 
-  create(createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
-    return this.prismaService.$transaction(
+  async create(createObjectiveDto: CreateObjectiveWithKeyResultsDto) {
+    const objective = await this.prismaService.$transaction(
       async (tx: Prisma.TransactionClient) => {
         const prisma = tx as PrismaClient;
         const { keyResults, ...objectiveData } = createObjectiveDto;
@@ -49,6 +53,12 @@ export class ObjectivesService {
         });
       },
     );
+
+    if (objective) {
+      await this.createEmbedding(JSON.stringify(objective), objective.id);
+    }
+
+    return objective;
   }
 
   update(objectiveId: number, updateObjectiveDto: ObjectiveDto) {
@@ -99,5 +109,18 @@ export class ObjectivesService {
     }
     if (targetValue <= 0) return 0;
     return (updatedValue / targetValue) * 100;
+  }
+
+  private async createEmbedding(okrText: string, objectiveId: number) {
+    const embedding = await this.geminiService.createEmbedding(okrText);
+
+    if (!embedding?.length) {
+      throw new Error('Gemini returned an empty embedding response');
+    }
+
+    await this.prismaService.$executeRaw`
+      INSERT INTO "OkrEmbedding" ("embedding", "objectiveId")
+      VALUES (${`[${embedding.join(',')}]`}::vector, ${objectiveId})
+    `;
   }
 }
