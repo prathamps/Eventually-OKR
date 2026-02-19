@@ -4,6 +4,7 @@ import { PrismaService } from '../../prisma.service';
 import { KeyResult } from '@prisma/client';
 import { KeyResultDto } from './dto/keyResultDto';
 import { UpdateKeyResultDto } from './dto/updateKeyResultDto';
+import { BadRequestException } from '@nestjs/common';
 
 describe('KeyResultsService', () => {
   let keyResultsService: KeyResultsService;
@@ -11,6 +12,7 @@ describe('KeyResultsService', () => {
   const mockPrismaService = {
     keyResult: {
       findMany: jest.fn(),
+      findUnique: jest.fn(),
       update: jest.fn(),
       create: jest.fn(),
       delete: jest.fn(),
@@ -106,6 +108,21 @@ describe('KeyResultsService', () => {
         },
       });
     });
+
+    it('should throw when updated value is greater than target value', () => {
+      const objectiveId = 2;
+      const keyResultDto: KeyResultDto = {
+        description: 'Complete the project',
+        metric: 'tasks',
+        updatedValue: 11,
+        targetValue: 10,
+      };
+
+      expect(() => keyResultsService.create(keyResultDto, objectiveId)).toThrow(
+        BadRequestException,
+      );
+      expect(mockPrismaService.keyResult.create).not.toHaveBeenCalled();
+    });
   });
 
   describe('update', () => {
@@ -143,6 +160,23 @@ describe('KeyResultsService', () => {
           ...keyResultDto,
         },
       });
+    });
+
+    it('should throw when updated value is greater than target value', async () => {
+      const keyResultId = 1;
+      const keyResultDto: Partial<UpdateKeyResultDto> = {
+        updatedValue: 11,
+      };
+
+      mockPrismaService.keyResult.findUnique.mockResolvedValue({
+        updatedValue: 10,
+        targetValue: 10,
+      });
+
+      await expect(
+        keyResultsService.update(keyResultDto, keyResultId),
+      ).rejects.toThrow(BadRequestException);
+      expect(mockPrismaService.keyResult.update).not.toHaveBeenCalled();
     });
   });
 

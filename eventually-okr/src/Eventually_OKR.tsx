@@ -73,12 +73,12 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
       <form
         ref={formRef}
         className={
-          "w-full max-w-4xl h-fit flex flex-col gap-4 p-6 rounded-3xl border border-[#c7c7cc] bg-white/60"
+          "glass-card w-full max-w-4xl h-fit flex flex-col gap-4 rounded-3xl p-4 sm:p-6"
         }
         onSubmit={submitObjectives}
       >
         {formError ? (
-          <div className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] px-4 py-3 text-sm text-[#b42318]">
+          <div className="rounded-2xl border border-rose-200 bg-rose-50/85 px-4 py-3 text-sm text-rose-700">
             {formError}
           </div>
         ) : null}
@@ -98,18 +98,18 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
                 name="objectives"
                 value={objective}
                 onChange={(e) => setObjective(e.target.value)}
-                className="rounded-2xl border border-[#e5e5ea] bg-[#f2f2f7] px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-[#007AFF] focus:ring-4 focus:ring-[#007AFF]/15"
+                className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-base text-zinc-900 placeholder:text-zinc-500  outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-500/15"
                 required
               />
             </div>
 
             <KeyResultForm />
 
-            <div className="mt-2 flex justify-around gap-4">
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:justify-around">
               <button
                 type="submit"
                 className={
-                  "min-w-32 rounded-full border border-[#e5e5ea] text-[#007AFF] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
+                  "w-full sm:w-auto min-w-32 rounded-full border border-teal-300 bg-teal-600 px-8 py-3 text-base font-semibold text-white shadow cursor-pointer transition hover:bg-teal-700"
                 }
               >
                 Submit
@@ -117,7 +117,7 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
               <button
                 type="reset"
                 className={
-                  "min-w-32 rounded-full border border-[#e5e5ea] text-[#FF3B30] px-8 py-3 text-base font-semibold shadow cursor-pointer transition-all hover:scale-115"
+                  "w-full sm:w-auto min-w-32 rounded-full border border-rose-200 bg-white px-8 py-3 text-base font-semibold text-rose-700 shadow cursor-pointer transition hover:bg-rose-50"
                 }
                 onClick={() => {
                   setObjective("");
@@ -132,7 +132,7 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
 
           <div className="flex flex-col gap-3">
             <div className="text-lg font-semibold text-zinc-900">
-              Key Results
+              Draft Key Results
             </div>
             <div className="max-h-[45vh] overflow-y-auto pr-1">
               <KeyResultList />
@@ -147,7 +147,7 @@ function EventuallyOkrForm({ setOkrList, apiBase }: EventuallyOkrProps) {
 function EventuallyOkr({ setOkrList, apiBase }: EventuallyOkrProps) {
   return (
     <KeyResultProvider>
-      <div className="flex flex-col items-center px-4 py-6">
+      <div className="flex flex-col items-center px-2 py-2 sm:px-4">
         <EventuallyOkrForm setOkrList={setOkrList} apiBase={apiBase} />
       </div>
     </KeyResultProvider>

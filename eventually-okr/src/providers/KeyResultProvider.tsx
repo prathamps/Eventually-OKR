@@ -25,6 +25,8 @@ export const KeyResultProvider = ({
     if (updatedValue < 0) throw new Error("Updated value cannot be negative.");
     if (targetValue <= 0)
       throw new Error("Target value should be greater than 0.");
+    if (updatedValue > targetValue)
+      throw new Error("Updated value cannot be greater than target value.");
 
     setKeyResultList((prev) => [...prev, keyResult]);
   }

@@ -35,6 +35,18 @@ export class KeyResultValuesPipe implements PipeTransform {
       updates.targetValue = targetValue;
     }
 
+    if (
+      updates.updatedValue !== undefined &&
+      updates.updatedValue !== null &&
+      updates.targetValue !== undefined &&
+      updates.targetValue !== null &&
+      Number(updates.updatedValue) > Number(updates.targetValue)
+    ) {
+      throw new BadRequestException(
+        'Updated value cannot be greater than target value.',
+      );
+    }
+
     if (typeof updates.metric === 'string' && !updates.metric.trim()) {
       throw new BadRequestException('Metric cannot be empty.');
     }
