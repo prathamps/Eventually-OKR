@@ -192,6 +192,7 @@ const OkrList = ({
 
   return (
     <>
+<<<<<<< HEAD
       <div className="space-y-4">
         {okr?.map((objective: OKR) => {
           const keyResults = objective.keyResults ?? [];
@@ -207,6 +208,15 @@ const OkrList = ({
               }`}
             >
             <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+=======
+      <div className="space-y-4 ">
+        {okr?.map((objective: OKR) => (
+          <div
+            key={objective.id}
+            className="overflow-hidden shadow-sm rounded-3xl border border-[#c7c7cc] bg-white/60"
+          >
+            <div className="flex items-center justify-between gap-4 border-b border-[#e5e5ea] px-5 py-4">
+>>>>>>> 3dfec36f86c0c088231470f35a0ed062b323c4ef
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold text-zinc-900">
                   {objective.title}
@@ -247,6 +257,7 @@ const OkrList = ({
             <ul className="divide-y divide-slate-200">
               {keyResults.map((keyResult: KeyResult, index) => {
                 const checkboxId = `kr-${objective.id}-${keyResult.id}`;
+<<<<<<< HEAD
                 const progressValue = getProgress(
                   keyResult.updatedValue,
                   keyResult.targetValue,
@@ -255,6 +266,13 @@ const OkrList = ({
                 const valueText = `${keyResult.updatedValue}/${keyResult.targetValue} ${keyResult.metric}`;
                 const keyResultComplete = isKeyResultComplete(keyResult);
                 let bg_color = "bg-white/85";
+=======
+                const progressText =
+                  typeof keyResult.progress === "number"
+                    ? `${keyResult.progress}%`
+                    : keyResult.progress;
+                let bg_color = "bg-amber-200";
+>>>>>>> 3dfec36f86c0c088231470f35a0ed062b323c4ef
                 if (index % 2) {
                   bg_color = "bg-amber-50/70";
                 }
@@ -327,7 +345,11 @@ const OkrList = ({
                         onClick={() =>
                           onDeleteKeyResult(objective.id, keyResult.id)
                         }
+<<<<<<< HEAD
                         className="rounded-full border border-rose-200 bg-white px-3 py-1.5 text-sm font-semibold text-rose-700 cursor-pointer hover:bg-rose-50"
+=======
+                        className="rounded-full border border-black px-3 py-1.5 text-sm font-semibold text-[#FF3B30] cursor-pointer hover:bg-[#f2f2f7]"
+>>>>>>> 3dfec36f86c0c088231470f35a0ed062b323c4ef
                       >
                         Delete
                       </button>
