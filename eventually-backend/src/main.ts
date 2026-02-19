@@ -14,6 +14,7 @@ async function bootstrap() {
     .addTag('Health')
     .addTag('Objectives')
     .addTag('Key Results')
+    .addTag('Chat Bot')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
