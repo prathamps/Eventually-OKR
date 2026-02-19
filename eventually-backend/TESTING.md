@@ -45,8 +45,8 @@ pnpm test:e2e
 
 TestContainers will automatically spin up a PostgreSQL container with the following specifications:
 
-- **Image**: `postgres:15-alpine`
-- **Version**: PostgreSQL 15 (Alpine Linux)
+- **Image**: `ankane/pgvector`
+- **Version**: PostgreSQL with `pgvector` extension preinstalled
 
 The container is automatically managed by TestContainers and will be cleaned up after tests complete.
 
